@@ -4,14 +4,12 @@ import MarkdownUI
 struct MarkdownEditorView: View {
     @Binding var markdownText: String
     @Binding var selection: TextSelection?
+    @State private var markdown: [String] = []
     @State private var showingInsertLink = false
     @State private var showingInsertImage = false
-    @State private var selectedHeaderLevel: Int = 0
-    @State private var markdown: [String] = []
-    @State private var tracker: MarkdownTracker?
     @State private var processor: MarkdownProcessor?
+    @State private var selectedHeaderLevel: Int = 0
     @State private var selectedRange: Range<String.Index>?
-    @FocusState private var focusState: Bool
     private var color = Color(light: .white, dark: Color(rgba: 0x1819_1dff))
 
     init(markdownText: Binding<String>, selection: Binding<TextSelection?>) {
@@ -21,7 +19,7 @@ struct MarkdownEditorView: View {
 
     var body: some View {
         HSplitView {
-            TextView(text: $markdownText, selection: $selection)
+            TextView(text: $markdownText , selection: $selection)
                 .disableAutocorrection(true)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
                 .onChange(of: selection) {_, newSelection in
@@ -39,9 +37,6 @@ struct MarkdownEditorView: View {
                         break
                     }
                 }
-                .focused($focusState)
-                .scrollDisabled(true)
-                .scrollIndicators(.hidden)
             ScrollView(){
                 Markdown(markdownText)
                     .padding(8)
@@ -63,9 +58,7 @@ struct MarkdownEditorView: View {
         .toolbarBackground(color, for: .windowToolbar)
         .toolbar {
             Button {
-                processor?.applyMarkdownToSelection(range: selectedRange, type: .bold) {range in
-                    selectedRange = range
-                }
+                processor?.applyMarkdownToSelection(range: selectedRange, type: .bold)
             } label: {
                 IconView("bold", isAtive: false)
             }
@@ -160,7 +153,6 @@ struct MarkdownEditorView: View {
         }
         .onAppear {
             self.processor = MarkdownProcessor(markdownText: self.$markdownText)
-            self.focusState = true
         }
     }
 }

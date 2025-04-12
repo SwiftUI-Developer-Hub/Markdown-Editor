@@ -37,8 +37,7 @@ class MarkdownProcessor {
     // Apply a markdown type to the selection range
     func applyMarkdownToSelection(
         range: Range<String.Index>?,
-        type: MarkdownType,
-        callback: ((Range<String.Index>) -> Void)? = nil
+        type: MarkdownType
     ) {
         // Determine the current selected range (or the caret position if nil).
         var selectedRange = range ?? markdownText.startIndex..<markdownText.startIndex
@@ -92,9 +91,6 @@ class MarkdownProcessor {
                 selectedRange = newPosition..<newPosition
             }
         }
-
-        // Call the callback with the updated cursor position
-        callback?(selectedRange)
     }
 
     // Function to get the current markdown text after processing

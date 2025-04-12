@@ -23,16 +23,17 @@ struct TextView: NSViewRepresentable {
     @Binding var text: String
     @Binding var selection: TextSelection?
     var onDone: (() -> Void)?
+    var mdTracker = MarkdownTracker(initialText: "")
 
     func makeNSView(context: Context) -> NSScrollView {
-        let scrollView = NSTextView.scrollableTextView()
+        let scrollView = PlainTextView.scrollableTextView()
 
         // MARK: - NSScrollView Settings
         scrollView.borderType = .noBorder
         scrollView.drawsBackground = false
-        scrollView.autoresizingMask = .width
         scrollView.allowsMagnification = true
         scrollView.allowedTouchTypes = .indirect
+        scrollView.autoresizingMask = [.width, .height]
         scrollView.horizontalScrollElasticity = .automatic
         scrollView.automaticallyAdjustsContentInsets = true
         scrollView.translatesAutoresizingMaskIntoConstraints = true
@@ -47,18 +48,16 @@ struct TextView: NSViewRepresentable {
         textView.allowsUndo = true
         textView.usesFindBar = true
         textView.isSelectable = true
+        textView.usesFindPanel = true
         textView.drawsBackground = false
-        textView.displaysLinkToolTips = true
-        textView.autoresizesSubviews = true
         textView.autoresizingMask = .width
+        textView.autoresizesSubviews = true
+        textView.displaysLinkToolTips = true
         textView.smartInsertDeleteEnabled = true
         textView.isGrammarCheckingEnabled = true
         textView.baseWritingDirection = .natural
         textView.setSelectedRange(NSMakeRange(0, 0))
         textView.isContinuousSpellCheckingEnabled = true
-        textView.isAutomaticTextReplacementEnabled = true
-        textView.isAutomaticDashSubstitutionEnabled = true
-        textView.isAutomaticQuoteSubstitutionEnabled = true
         textView.isAutomaticSpellingCorrectionEnabled = true
         textView.textContainer?.lineFragmentPadding = 4
         textView.textContainer?.lineBreakMode = .byWordWrapping
@@ -66,9 +65,10 @@ struct TextView: NSViewRepresentable {
         textView.translatesAutoresizingMaskIntoConstraints = true
         textView.insertionPointColor = NSColor(Color.accentColor)
         textView.font = NSFont.monospacedSystemFont(ofSize: 16, weight: .regular)
-
-        // Customize the menu
-        textView.menu = cleanContextMenu(from: textView.menu)
+        textView.writingToolsCoordinator = .none
+        textView.writingToolsBehavior = .limited
+        textView.allowedWritingToolsResultOptions = [.plainText]
+        textView.menu = nil
 
         if textView.string != text {
             textView.string = text
@@ -109,7 +109,15 @@ struct TextView: NSViewRepresentable {
 
         func textDidChange(_ notification: Notification) {
             guard let textView = notification.object as? NSTextView else { return }
-            text.wrappedValue = textView.string
+
+            let oldText = text.wrappedValue
+            let newText = textView.string
+
+            text.wrappedValue = newText
+
+            textView.undoManager?.registerUndo(withTarget: self) { target in
+                target.text.wrappedValue = oldText
+            }
         }
 
         func textView(_ textView: NSTextView, shouldChangeTextIn affectedCharRange: NSRange, replacementString: String?) -> Bool {
@@ -137,25 +145,8 @@ struct TextView: NSViewRepresentable {
     }
 }
 
-
-func cleanContextMenu(from menu: NSMenu?) -> NSMenu {
-    guard let menu = menu else { return NSMenu() }
-
-    let keepTitles: Set<String> = [
-        "Cut", "Copy", "Paste",
-        "Spelling and Grammar", "Speech"
-    ]
-
-    let newMenu = NSMenu(title: "Cleaned Menu")
-
-    for item in menu.items {
-        let title = item.title.components(separatedBy: CharacterSet.newlines).first ?? item.title
-
-        if keepTitles.contains(title) {
-            let copiedItem = item.copy() as! NSMenuItem
-            newMenu.addItem(copiedItem)
-        }
+class PlainTextView: NSTextView {
+    override func menu(for event: NSEvent) -> NSMenu? {
+        return nil  // This ensures no context menu is shown
     }
-
-    return newMenu
 }

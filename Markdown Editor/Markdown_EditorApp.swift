@@ -4,6 +4,7 @@
 //
 //  Created by BAproductions on 4/9/25.
 //
+import Cocoa
 import SwiftUI
 import UniformTypeIdentifiers
 
@@ -14,14 +15,15 @@ struct Markdown_EditorApp: App {
     @State private var selection: TextSelection? = nil
     @State private var filepath: URL?
 
-    init() {}
-
     var body: some Scene {
         Window("", id: "") {
             MarkdownEditorView(markdownText: $markdownText, selection: $selection)
                 .navigationTitle(filepath?.lastPathComponent ?? "Untitled")
+                .onChange(of: filepath) { _, _ in
+                    updateWindowTitle()
+                }
                 .windowDismissBehavior(.disabled)
-                .windowFullScreenBehavior(.disabled)
+//                .windowFullScreenBehavior(.disabled)
         }
         .commands {
             CommandGroup(replacing: .newItem) { }
@@ -47,8 +49,8 @@ struct Markdown_EditorApp: App {
                     saveFile(saveAs: true)
                 }
                 .keyboardShortcut("S", modifiers: [.command, .shift])
-                .disabled(((filepath?.lastPathComponent.isEmpty) == nil))
             }
+            TextEditingCommands()
         }
         .windowLevel(.normal)
         .windowStyle(.titleBar)
@@ -69,32 +71,30 @@ struct Markdown_EditorApp: App {
             if let content = try? String(contentsOf: url, encoding: .utf8) {
                 markdownText = content
                 filepath = url
+                updateWindowTitle()
             }
         }
     }
 
     private func saveFile(saveAs: Bool = false) {
         if saveAs || filepath == nil {
-            // Always show Save As if `saveAs` is true or the file hasn't been saved yet
             let panel = NSSavePanel()
             panel.allowedContentTypes = [
                 UTType(filenameExtension: "md")!,
                 UTType(filenameExtension: "mkdn")!
             ]
-            panel.nameFieldStringValue = filepath?.lastPathComponent ?? "Untitled.md"  // Default name or current file name
+            panel.nameFieldStringValue = filepath?.lastPathComponent ?? "Untitled.md"
 
             if panel.runModal() == .OK, let url = panel.url {
                 do {
                     try markdownText.write(to: url, atomically: true, encoding: .utf8)
-                    filepath = url  // Save the new file path
+                    filepath = url
+                    updateWindowTitle()
                 } catch {
                     print("Error saving file: \(error.localizedDescription)")
                 }
-            } else {
-                print("Save panel was canceled or failed to get a URL")
             }
         } else {
-            // File already has a filepath – save directly without prompting
             do {
                 try markdownText.write(to: filepath!, atomically: true, encoding: .utf8)
             } catch {
@@ -102,31 +102,8 @@ struct Markdown_EditorApp: App {
             }
         }
     }
-}
 
-final class AppDelegate: NSObject, NSApplicationDelegate {
-    func applicationWillUpdate(_ notification: Notification) {
-        hideAutoFill()
-    }
-
-    func applicationDidUpdate(_ notification: Notification) {
-        hideAutoFill()
-    }
-
-    func applicationDidFinishLaunching(_ notification: Notification) {
-        hideAutoFill()
-    }
-
-    func hideAutoFill(){
-        DispatchQueue.main.async {
-            guard let submenu = NSApplication.shared.mainMenu?
-                .items.first(where: { $0.title == "Edit" })?
-                .submenu else { return }
-
-            if let itemToRemove = submenu.items.first(where: { $0.title == "AutoFill" }) {
-                submenu.removeItem(itemToRemove)
-            }
-        }
+    private func updateWindowTitle() {
+        NSApp.keyWindow?.title = filepath?.lastPathComponent ?? "Untitled"
     }
 }
-
