@@ -15,6 +15,7 @@ struct IconView: View {
         self.icon = icon
         self.isAtive = isAtive
     }
+
     var body: some View {
         Image(systemName: icon)
             .foregroundStyle(isAtive ? .white : .gray)

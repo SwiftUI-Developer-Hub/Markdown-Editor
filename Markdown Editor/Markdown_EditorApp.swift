@@ -14,8 +14,7 @@ struct Markdown_EditorApp: App {
     @State private var selection: TextSelection? = nil
     @State private var filepath: URL?
 
-    init() {
-    }
+    init() {}
 
     var body: some Scene {
         Window("", id: "") {
