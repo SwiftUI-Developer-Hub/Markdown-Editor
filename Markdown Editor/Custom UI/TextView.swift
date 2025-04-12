@@ -146,7 +146,8 @@ struct TextView: NSViewRepresentable {
 }
 
 class PlainTextView: NSTextView {
+    // You can override the menu method to disable the context menu if you still need it
     override func menu(for event: NSEvent) -> NSMenu? {
-        return nil  // This ensures no context menu is shown
+        return nil
     }
 }

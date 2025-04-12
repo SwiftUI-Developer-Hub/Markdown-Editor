@@ -23,7 +23,7 @@ struct Markdown_EditorApp: App {
                     updateWindowTitle()
                 }
                 .windowDismissBehavior(.disabled)
-//                .windowFullScreenBehavior(.disabled)
+                .windowFullScreenBehavior(.disabled)
         }
         .commands {
             CommandGroup(replacing: .newItem) { }
