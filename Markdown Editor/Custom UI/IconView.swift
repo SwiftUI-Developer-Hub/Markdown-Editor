@@ -17,7 +17,6 @@ struct IconView: View {
     }
     var body: some View {
         Image(systemName: icon)
-            .imageScale(.large)
             .foregroundStyle(isAtive ? .white : .gray)
     }
 }

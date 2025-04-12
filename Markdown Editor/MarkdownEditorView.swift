@@ -42,17 +42,16 @@ struct MarkdownEditorView: View {
                 .focused($focusState)
                 .scrollDisabled(true)
                 .scrollIndicators(.hidden)
-                .padding()
             ScrollView(){
                 Markdown(markdownText)
-                    .padding()
+                    .padding(8)
                     .markdownTheme(.gitMac)
                     .markdownSoftBreakMode(.lineBreak)
                     .markdownBulletedListMarker(.circle)
                     .markdownNumberedListMarker(.decimal)
                     .markdownTaskListMarker(.checkmarkSquare)
                     .markdownCodeSyntaxHighlighter(.plainText)
-                    .markdownMargin(top: .em(0.8), bottom: .em(0.8))
+                    .markdownMargin(top: .em(0), bottom: .em(0))
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
             }
         }

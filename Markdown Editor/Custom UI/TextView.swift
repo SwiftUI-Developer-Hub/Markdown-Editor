@@ -24,27 +24,71 @@ struct TextView: NSViewRepresentable {
     @Binding var selection: TextSelection?
     var onDone: (() -> Void)?
 
-    func makeNSView(context: Context) -> NSTextView {
-        let textView = NSTextView()
+    func makeNSView(context: Context) -> NSScrollView {
+        let scrollView = NSTextView.scrollableTextView()
+
+        // MARK: - NSScrollView Settings
+        scrollView.borderType = .noBorder
+        scrollView.drawsBackground = false
+        scrollView.autoresizingMask = .width
+        scrollView.allowsMagnification = true
+        scrollView.allowedTouchTypes = .indirect
+        scrollView.horizontalScrollElasticity = .automatic
+        scrollView.automaticallyAdjustsContentInsets = true
+        scrollView.translatesAutoresizingMaskIntoConstraints = true
+        scrollView.contentInsets = .init(top: 16, left: 8, bottom: 16, right: 8)
+        
+        // MARK: - NStextView Settings
+        guard let textView = scrollView.documentView as? NSTextView else {
+            return scrollView
+        }
         textView.delegate = context.coordinator
         textView.isEditable = true
+        textView.allowsUndo = true
+        textView.usesFindBar = true
         textView.isSelectable = true
-        textView.font = NSFont.systemFont(ofSize: NSFont.systemFontSize)
-        textView.textColor = .white
-        textView.backgroundColor = .clear
-        textView.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
-        return textView
-    }
+        textView.drawsBackground = false
+        textView.displaysLinkToolTips = true
+        textView.autoresizesSubviews = true
+        textView.autoresizingMask = .width
+        textView.smartInsertDeleteEnabled = true
+        textView.isGrammarCheckingEnabled = true
+        textView.baseWritingDirection = .natural
+        textView.setSelectedRange(NSMakeRange(0, 0))
+        textView.isContinuousSpellCheckingEnabled = true
+        textView.isAutomaticTextReplacementEnabled = true
+        textView.isAutomaticDashSubstitutionEnabled = true
+        textView.isAutomaticQuoteSubstitutionEnabled = true
+        textView.isAutomaticSpellingCorrectionEnabled = true
+        textView.textContainer?.lineFragmentPadding = 4
+        textView.textContainer?.lineBreakMode = .byWordWrapping
+        textView.textContainerInset = NSSize(width: 4, height: 8)
+        textView.translatesAutoresizingMaskIntoConstraints = true
+        textView.insertionPointColor = NSColor(Color.accentColor)
+        textView.font = NSFont.monospacedSystemFont(ofSize: 16, weight: .regular)
 
-    func updateNSView(_ nsView: NSTextView, context: Context) {
-        // Sync the text value if it has changed
-        if nsView.string != text {
-            nsView.string = text
+        // Customize the menu
+        textView.menu = cleanContextMenu(from: textView.menu)
+
+        if textView.string != text {
+            textView.string = text
         }
 
-        // Ensure the text view is the first responder if not already
-        if nsView.window?.firstResponder !== nsView {
-            nsView.window?.makeFirstResponder(nsView)
+        // Return the scroll view
+        return scrollView
+    }
+
+    func updateNSView(_ nsView: NSScrollView, context: Context) {
+        let textView = nsView.documentView as! NSTextView
+        // Sync the text value if it has changed
+        if textView.string != text {
+            textView.string = text
+        }
+
+        DispatchQueue.main.async {
+            if textView.window?.firstResponder !== textView {
+                textView.window?.makeFirstResponder(textView)
+            }
         }
     }
 
@@ -93,21 +137,25 @@ struct TextView: NSViewRepresentable {
     }
 }
 
-extension StringProtocol {
-    func nsRange(from range: Range<Index>) -> NSRange {
-        let string = String(self)
-        return NSRange(range, in: string)
-    }
 
-    func range(from nsRange: NSRange) -> Range<Index>? {
-        let string = String(self)
-        guard let from16 = string.utf16.index(string.utf16.startIndex, offsetBy: nsRange.location, limitedBy: string.utf16.endIndex),
-              let to16 = string.utf16.index(from16, offsetBy: nsRange.length, limitedBy: string.utf16.endIndex),
-              let start = Index(from16, within: string),
-              let end = Index(to16, within: string) else {
-            return nil
+func cleanContextMenu(from menu: NSMenu?) -> NSMenu {
+    guard let menu = menu else { return NSMenu() }
+
+    let keepTitles: Set<String> = [
+        "Cut", "Copy", "Paste",
+        "Spelling and Grammar", "Speech"
+    ]
+
+    let newMenu = NSMenu(title: "Cleaned Menu")
+
+    for item in menu.items {
+        let title = item.title.components(separatedBy: CharacterSet.newlines).first ?? item.title
+
+        if keepTitles.contains(title) {
+            let copiedItem = item.copy() as! NSMenuItem
+            newMenu.addItem(copiedItem)
         }
-        return start..<end
     }
-}
 
+    return newMenu
+}

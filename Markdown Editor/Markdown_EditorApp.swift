@@ -15,7 +15,6 @@ struct Markdown_EditorApp: App {
     @State private var filepath: URL?
 
     init() {
-        // You can initialize other things here if necessary
     }
 
     var body: some Scene {
