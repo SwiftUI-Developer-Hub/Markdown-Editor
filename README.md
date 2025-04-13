@@ -1,4 +1,6 @@
 # Markdown Editor
+![](https://github.com/SwiftUI-Developer-Hub/Markdown-Editor/blob/main/Markdown%20Editor/Assets.xcassets/AppIcon.appiconset/mac512.png?raw=true)
+
 **Markdown Editor** is a tool for creating and editing Markdown files (`.md`, `.mkdn` formats).  
 It helps you write structured content using simple syntax—ideal for documentation, notes, and more.
 
@@ -6,11 +8,11 @@ It helps you write structured content using simple syntax—ideal for documentat
 - All toolbar buttons are functional and insert the correct Markdown syntax.
 - Live preview of the Markdown code works.
 - Basic editing functionality is in place.
+- Undo/Redo behavior
 
 ## What's Broken
-- Toggle formatting based on text selection does not work.
-- Undo/Redo behavior is unreliable (undo manager not yet implemented).
+- Image Size is no supported markdown ui
 
 ## What's Missing
-- Undo manager for tracking and reverting text changes.
-
+- Multi File Support
+- Toggle formatting based on text selection does not work.
