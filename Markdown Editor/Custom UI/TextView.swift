@@ -22,9 +22,12 @@ class Global {
 struct TextView: NSViewRepresentable {
     @Binding var text: String
     @Binding var selection: TextSelection?
+    var contexts: Context?
     var onDone: (() -> Void)?
-    var mdTracker = MarkdownTracker(initialText: "")
-
+    init(text: Binding<String>, selection: Binding<TextSelection?>) {
+        _text = text
+        _selection = selection
+    }
     func makeNSView(context: Context) -> NSScrollView {
         let scrollView = PlainTextView.scrollableTextView()
 
@@ -73,6 +76,8 @@ struct TextView: NSViewRepresentable {
         if textView.string != text {
             textView.string = text
         }
+
+//         = context.coordinator
 
         // Return the scroll view
         return scrollView

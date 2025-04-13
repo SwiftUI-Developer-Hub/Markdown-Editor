@@ -1,5 +1,13 @@
-import Foundation
+//
+//  MarkdownProcessor.swift
+//  Markdown Editor
+//
+//  Created by BAproductions on 4/11/25.
+//
+
 import SwiftUI
+import Combine
+import Foundation
 
 // Enum to represent different types of markdown
 enum MarkdownType {
@@ -25,28 +33,24 @@ struct MarkdownBlock {
 
 // The core logic to process and apply markdown formatting
 class MarkdownProcessor {
-    
-    @Binding private var markdownText: String
+    var undoManager: UndoManager?
+    @Binding var markdownText: String
     private var markdownBlocks: [MarkdownBlock]
 
-    init(markdownText: Binding<String>) {
-        _markdownText = markdownText
+    init(_ markdownText: Binding<String>, undoManager: UndoManager?) {
         self.markdownBlocks = []
+        _markdownText = markdownText
+        self.undoManager = undoManager
     }
 
-    // Apply a markdown type to the selection range
     func applyMarkdownToSelection(
-        range: Range<String.Index>?,
-        type: MarkdownType
+        _ range: Range<String.Index>?,
+        type: MarkdownType,
     ) {
-        // Determine the current selected range (or the caret position if nil).
-        var selectedRange = range ?? markdownText.startIndex..<markdownText.startIndex
-        // Get the currently selected text.
+        let selectedRange = range ?? markdownText.startIndex..<markdownText.startIndex
         var selectedText = String(markdownText[selectedRange])
-        // If nothing is selected, use a descriptive string for the type.
         selectedText = selectedRange.isEmpty && selectedText.isEmpty ? type.description() : selectedText
 
-        // Format based on markdown type.
         let formattedText: String
         switch type {
         case .bold:
@@ -75,38 +79,19 @@ class MarkdownProcessor {
             formattedText = "![\(imageName)](\(url))"
         }
 
-        // Update the markdown text and advance the selection (cursor) to the end of the inserted text.
+        let previousText = markdownText
+
         if markdownText.isEmpty {
             markdownText = formattedText
-            selectedRange = markdownText.endIndex..<markdownText.endIndex
         } else if selectedRange.isEmpty {
             markdownText.insert(contentsOf: formattedText, at: selectedRange.lowerBound)
-            if let newPosition = markdownText.index(selectedRange.lowerBound, offsetBy: formattedText.count, limitedBy: markdownText.endIndex) {
-                selectedRange = newPosition..<newPosition
-            }
         } else {
-            let insertionStart = selectedRange.lowerBound
             markdownText.replaceSubrange(selectedRange, with: formattedText)
-            if let newPosition = markdownText.index(insertionStart, offsetBy: formattedText.count, limitedBy: markdownText.endIndex) {
-                selectedRange = newPosition..<newPosition
-            }
         }
-    }
 
-    // Function to get the current markdown text after processing
-    func getProcessedMarkdown() -> String {
-        return markdownText
-    }
-
-    // Reset all the markdown blocks (useful for clearing selections or resetting)
-    func resetMarkdownBlocks() {
-        markdownBlocks.removeAll()
-    }
-
-    // Apply a whole range of markdown formatting (can be used for entire document or specific parts)
-    func applyMarkdownToFullText(type: MarkdownType) {
-        let range = markdownText.startIndex..<markdownText.endIndex
-        applyMarkdownToSelection(range: range, type: type)
+        undoManager?.registerUndo(withTarget: self) { target in
+            target.markdownText = previousText
+        }
     }
 }
 

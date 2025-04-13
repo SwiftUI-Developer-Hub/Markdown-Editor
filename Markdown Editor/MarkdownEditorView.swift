@@ -5,6 +5,7 @@ struct MarkdownEditorView: View {
     @Binding var markdownText: String
     @Binding var selection: TextSelection?
     @State private var markdown: [String] = []
+    @Environment(\.undoManager) var undoManager
     @State private var showingInsertLink = false
     @State private var showingInsertImage = false
     @State private var processor: MarkdownProcessor?
@@ -19,7 +20,7 @@ struct MarkdownEditorView: View {
 
     var body: some View {
         HSplitView {
-            TextView(text: $markdownText , selection: $selection)
+            TextView(text: $markdownText, selection: $selection)
                 .disableAutocorrection(true)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
                 .onChange(of: selection) {_, newSelection in
@@ -58,17 +59,17 @@ struct MarkdownEditorView: View {
         .toolbarBackground(color, for: .windowToolbar)
         .toolbar {
             Button {
-                processor?.applyMarkdownToSelection(range: selectedRange, type: .bold)
+                processor?.applyMarkdownToSelection(selectedRange, type: .bold)
             } label: {
                 IconView("bold", isAtive: false)
             }
             Button {
-                processor?.applyMarkdownToSelection(range: selectedRange, type: .italic)
+                processor?.applyMarkdownToSelection(selectedRange, type: .italic)
             } label: {
                 IconView("italic", isAtive: false)
             }
             Button {
-                processor?.applyMarkdownToSelection(range: selectedRange, type: .strikethrough)
+                processor?.applyMarkdownToSelection(selectedRange, type: .strikethrough)
             } label: {
                 IconView("strikethrough", isAtive: false)
             }
@@ -83,36 +84,36 @@ struct MarkdownEditorView: View {
                     // No header is selected, so don't add any `#`
                     markdown = ["", ""]
                 } else {
-                    processor?.applyMarkdownToSelection(range: selectedRange, type: .header(level: newValue))
+                    processor?.applyMarkdownToSelection(selectedRange, type: .header(level: newValue))
                 }
             }
             Button {
-                processor?.applyMarkdownToSelection(range: selectedRange, type: .listItem)
+                processor?.applyMarkdownToSelection(selectedRange, type: .listItem)
             } label: {
                 IconView("list.bullet", isAtive: false)
             }
             Button {
-                processor?.applyMarkdownToSelection(range: selectedRange, type: .numberedItem)
+                processor?.applyMarkdownToSelection(selectedRange, type: .numberedItem)
             } label: {
                 IconView("list.number", isAtive: false)
             }
             Button {
-                processor?.applyMarkdownToSelection(range: selectedRange, type: .checklist)
+                processor?.applyMarkdownToSelection(selectedRange, type: .checklist)
             } label: {
                 IconView("checklist.checked", isAtive: false)
             }
             Button {
-                processor?.applyMarkdownToSelection(range: selectedRange, type: .blockquote)
+                processor?.applyMarkdownToSelection(selectedRange, type: .blockquote)
             } label: {
                 IconView("text.quote", isAtive: false)
             }
             Button {
-                processor?.applyMarkdownToSelection(range: selectedRange, type: .code)
+                processor?.applyMarkdownToSelection(selectedRange, type: .code)
             } label: {
                 IconView("chevron.left.forwardslash.chevron.right", isAtive: false)
             }
             Button {
-                processor?.applyMarkdownToSelection(range: selectedRange, type: .table(top: "|   |   |", middle: "|---|---|", bottom: "|   |   |"))
+                processor?.applyMarkdownToSelection(selectedRange, type: .table(top: "|   |   |", middle: "|---|---|", bottom: "|   |   |"))
             } label: {
                 IconView("table", isAtive: false)
             }
@@ -122,7 +123,7 @@ struct MarkdownEditorView: View {
                 if range.isEmpty {
                     showingInsertLink = true
                 } else {
-                    processor?.applyMarkdownToSelection(range: selectedRange, type: .link(linkName: selectedText, url: selectedText))
+                    processor?.applyMarkdownToSelection(selectedRange, type: .link(linkName: selectedText, url: selectedText))
                 }
             } label: {
                 IconView("link", isAtive: false)
@@ -133,7 +134,7 @@ struct MarkdownEditorView: View {
                 if range.isEmpty {
                     showingInsertImage = true
                 } else {
-                    processor?.applyMarkdownToSelection(range: selectedRange, type: .image(imageName: selectedText, url: selectedText))
+                    processor?.applyMarkdownToSelection(selectedRange, type: .image(imageName: selectedText, url: selectedText))
                 }
             } label: {
                 IconView("photo", isAtive: false)
@@ -141,18 +142,18 @@ struct MarkdownEditorView: View {
         }
         .sheet(isPresented: $showingInsertLink){
             SheetView(insertType: .link) {name,url in
-                processor?.applyMarkdownToSelection(range: selectedRange, type: .link(linkName: name, url: url))
+                processor?.applyMarkdownToSelection(selectedRange, type: .link(linkName: name, url: url))
             }
             .presentationCornerRadius(20)
         }
         .sheet(isPresented: $showingInsertImage){
             SheetView(insertType: .image) {name,url in
-                processor?.applyMarkdownToSelection(range: selectedRange, type: .image(imageName: name, url: url))
+                processor?.applyMarkdownToSelection(selectedRange, type: .image(imageName: name, url: url))
             }
             .presentationCornerRadius(20)
         }
         .onAppear {
-            self.processor = MarkdownProcessor(markdownText: self.$markdownText)
+            self.processor = MarkdownProcessor($markdownText, undoManager: undoManager)
         }
     }
 }
