@@ -21,8 +21,6 @@ struct MarkdownEditorView: View {
     var body: some View {
         HSplitView {
             TextView(text: $markdownText, selection: $selection)
-                .disableAutocorrection(true)
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
                 .onChange(of: selection) {_, newSelection in
                     guard let newSelection = newSelection else { return }
                     
@@ -38,6 +36,7 @@ struct MarkdownEditorView: View {
                         break
                     }
                 }
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
             ScrollView(){
                 Markdown(markdownText)
                     .padding(8)

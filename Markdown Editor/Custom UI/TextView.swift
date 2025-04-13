@@ -53,25 +53,30 @@ struct TextView: NSViewRepresentable {
         textView.isSelectable = true
         textView.usesFindPanel = true
         textView.drawsBackground = false
-        textView.autoresizingMask = .width
         textView.autoresizesSubviews = true
         textView.displaysLinkToolTips = true
-        textView.smartInsertDeleteEnabled = true
         textView.isGrammarCheckingEnabled = true
         textView.baseWritingDirection = .natural
         textView.setSelectedRange(NSMakeRange(0, 0))
+        textView.autoresizingMask = [.width, .height]
+        textView.textContainer?.lineFragmentPadding = 4
         textView.isContinuousSpellCheckingEnabled = true
         textView.isAutomaticSpellingCorrectionEnabled = true
-        textView.textContainer?.lineFragmentPadding = 4
         textView.textContainer?.lineBreakMode = .byWordWrapping
-        textView.textContainerInset = NSSize(width: 4, height: 8)
-        textView.translatesAutoresizingMaskIntoConstraints = true
         textView.insertionPointColor = NSColor(Color.accentColor)
+        textView.translatesAutoresizingMaskIntoConstraints = true
+        textView.textContainerInset = NSSize(width: 4, height: 8)
         textView.font = NSFont.monospacedSystemFont(ofSize: 16, weight: .regular)
         textView.writingToolsCoordinator = .none
         textView.writingToolsBehavior = .limited
         textView.allowedWritingToolsResultOptions = [.plainText]
-        textView.menu = nil
+        // Create a paragraph style
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineSpacing = 3.8
+
+        // Apply to the text view's typing attributes
+        textView.defaultParagraphStyle = paragraphStyle
+        textView.typingAttributes[.paragraphStyle] = paragraphStyle
 
         if textView.string != text {
             textView.string = text
