@@ -26,14 +26,6 @@ struct Markdown_EditorApp: App {
                 .windowFullScreenBehavior(.disabled)
         }
         .commands {
-            CommandGroup(replacing: .newItem) { }
-            CommandGroup(replacing: .sidebar) { }
-            CommandGroup(replacing: .toolbar) { }
-            CommandGroup(replacing: .printItem) { }
-            CommandGroup(replacing: .appSettings) { }
-            CommandGroup(replacing: .systemServices) { }
-            CommandGroup(replacing: .singleWindowList) { }
-            CommandGroup(replacing: .windowArrangement) { }
             CommandGroup(after: .saveItem) {
                 Button("Open...") {
                     openFile()
@@ -50,7 +42,7 @@ struct Markdown_EditorApp: App {
                 }
                 .keyboardShortcut("S", modifiers: [.command, .shift])
             }
-            TextEditingCommands()
+            WindowCommands()
         }
         .windowLevel(.normal)
         .windowStyle(.titleBar)

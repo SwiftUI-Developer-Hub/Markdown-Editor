@@ -84,17 +84,17 @@ struct MarkdownEditorView: View {
             Button {
                 processor?.applyMarkdownToSelection(selectedRange, type: .bold)
             } label: {
-                IconView("bold", isAtive: false)
+                IconView("Bold", icon: "bold", isAtive: false)
             }
             Button {
                 processor?.applyMarkdownToSelection(selectedRange, type: .italic)
             } label: {
-                IconView("italic", isAtive: false)
+                IconView("Italic", icon:"italic", isAtive: false)
             }
             Button {
                 processor?.applyMarkdownToSelection(selectedRange, type: .strikethrough)
             } label: {
-                IconView("strikethrough", isAtive: false)
+                IconView("Strikethrough", icon:"strikethrough", isAtive: false)
             }
             Picker("Header Level", selection: $selectedHeaderLevel) {
                 ForEach(0..<7, id: \.self) { level in
@@ -114,32 +114,32 @@ struct MarkdownEditorView: View {
             Button {
                 processor?.applyMarkdownToSelection(selectedRange, type: .listItem)
             } label: {
-                IconView("list.bullet", isAtive: false)
+                IconView("Bullet List", icon: "list.bullet", isAtive: false)
             }
             Button {
                 processor?.applyMarkdownToSelection(selectedRange, type: .numberedItem)
             } label: {
-                IconView("list.number", isAtive: false)
+                IconView("Number List", icon: "list.number", isAtive: false)
             }
             Button {
                 processor?.applyMarkdownToSelection(selectedRange, type: .checklist)
             } label: {
-                IconView("checklist.checked", isAtive: false)
+                IconView("Check Box", icon: "checklist.checked", isAtive: false)
             }
             Button {
                 processor?.applyMarkdownToSelection(selectedRange, type: .blockquote)
             } label: {
-                IconView("text.quote", isAtive: false)
+                IconView("Text Quote", icon: "text.quote", isAtive: false)
             }
             Button {
                 processor?.applyMarkdownToSelection(selectedRange, type: .code)
             } label: {
-                IconView("chevron.left.forwardslash.chevron.right", isAtive: false)
+                IconView("Code", icon: "chevron.left.forwardslash.chevron.right", isAtive: false)
             }
             Button {
                 processor?.applyMarkdownToSelection(selectedRange, type: .table(top: "|   |   |", middle: "|---|---|", bottom: "|   |   |"))
             } label: {
-                IconView("table", isAtive: false)
+                IconView("Table", icon: "table", isAtive: false)
             }
             Button {
                 let range = selectedRange ?? markdownText.startIndex..<markdownText.startIndex
@@ -150,7 +150,7 @@ struct MarkdownEditorView: View {
                     processor?.applyMarkdownToSelection(selectedRange, type: .link(linkName: selectedText, url: selectedText))
                 }
             } label: {
-                IconView("link", isAtive: false)
+                IconView("Link", icon: "link", isAtive: false)
             }
             Button {
                 let range = selectedRange ?? markdownText.startIndex..<markdownText.startIndex
@@ -161,7 +161,7 @@ struct MarkdownEditorView: View {
                     processor?.applyMarkdownToSelection(selectedRange, type: .image(imageName: selectedText, url: selectedText))
                 }
             } label: {
-                IconView("photo", isAtive: false)
+                IconView("Photo", icon: "photo", isAtive: false)
             }
         }
         .sheet(isPresented: $showingInsertLink){

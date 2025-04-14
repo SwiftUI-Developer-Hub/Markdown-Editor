@@ -8,16 +8,19 @@
 import SwiftUI
 
 struct IconView: View {
+    var lebel: String = ""
     var icon: String = ""
     var isAtive: Bool = false
 
-    init(_ icon: String = "", isAtive: Bool = false) {
+    init(_ lebel: String = "", icon: String = "", isAtive: Bool = false) {
         self.icon = icon
+        self.lebel = lebel
         self.isAtive = isAtive
     }
 
     var body: some View {
-        Image(systemName: icon)
+        Label(lebel, systemImage: icon)
+            .help("Insert \(lebel)")
             .foregroundStyle(isAtive ? .white : .gray)
     }
 }
