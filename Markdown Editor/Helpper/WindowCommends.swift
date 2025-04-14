@@ -9,10 +9,9 @@ import SwiftUI
 
 struct WindowCommands: Commands {
     var body: some Commands {
-        TextEditingCommands()
+        CommandGroup(replacing: .newItem) { }
         CommandGroup(replacing: .sidebar) { }
         CommandGroup(replacing: .toolbar) { }
-        CommandGroup(replacing: .newItem) { }
         CommandGroup(replacing: .printItem) { }
         CommandGroup(replacing: .appSettings) { }
         CommandGroup(replacing: .systemServices) { }

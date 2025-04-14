@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		CB08C1BB2DA9FAB300407B2D /* MarkdownUI in Frameworks */ = {isa = PBXBuildFile; productRef = CB08C1BA2DA9FAB300407B2D /* MarkdownUI */; };
+		CB83A4CC2DAD72D900508F8A /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB83A4CB2DAD72D900508F8A /* WelcomeView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -31,6 +32,7 @@
 		CB1213FE2DA6BB8D003D319D /* Markdown Editor.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Markdown Editor.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		CB12140C2DA6BB8E003D319D /* Markdown EditorTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Markdown EditorTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		CB1214162DA6BB8E003D319D /* Markdown EditorUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Markdown EditorUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		CB83A4CB2DAD72D900508F8A /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -80,6 +82,7 @@
 		CB1213F52DA6BB8D003D319D = {
 			isa = PBXGroup;
 			children = (
+				CB83A4CB2DAD72D900508F8A /* WelcomeView.swift */,
 				CB1214002DA6BB8D003D319D /* Markdown Editor */,
 				CB12140F2DA6BB8E003D319D /* Markdown EditorTests */,
 				CB1214192DA6BB8E003D319D /* Markdown EditorUITests */,
@@ -253,6 +256,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CB83A4CC2DAD72D900508F8A /* WelcomeView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
