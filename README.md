@@ -11,8 +11,9 @@ It helps you write structured content using simple syntax—ideal for documentat
 - Undo/Redo behavior
 
 ## What's Broken
-- Image Size is no supported markdown ui
+- Image size is not supported in the Markdown UI.
+- Synced scrolling between editor and preview does not work properly.
 
 ## What's Missing
-- Multi File Support
+- Multi-file support.
 - Toggle formatting based on text selection does not work.
