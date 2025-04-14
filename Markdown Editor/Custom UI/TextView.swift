@@ -38,28 +38,31 @@ struct TextView: NSViewRepresentable {
         let scrollView = PlainTextView.scrollableTextView()
 
         // MARK: - NSScrollView Settings
+        scrollView.focusRingType = .none
         scrollView.borderType = .noBorder
         scrollView.drawsBackground = false
-        scrollView.allowsMagnification = true
-        scrollView.allowedTouchTypes = .indirect
+        scrollView.autohidesScrollers = true
+        scrollView.autoresizesSubviews = true
+        scrollView.allowsMagnification = false
+        scrollView.verticalScrollElasticity = .allowed
         scrollView.autoresizingMask = [.width, .height]
-        scrollView.horizontalScrollElasticity = .automatic
-        scrollView.automaticallyAdjustsContentInsets = true
+        scrollView.horizontalScrollElasticity = .allowed
+        scrollView.automaticallyAdjustsContentInsets = false
         scrollView.translatesAutoresizingMaskIntoConstraints = true
         scrollView.contentView.postsBoundsChangedNotifications = true
-        scrollView.contentInsets = .init(top: 8, left: 8, bottom: 8, right: 8)
 
-        
         // MARK: - NStextView Settings
         guard let textView = scrollView.documentView as? NSTextView else {
             return scrollView
         }
+
         textView.delegate = context.coordinator
         textView.isEditable = true
         textView.allowsUndo = true
         textView.usesFindBar = true
         textView.isSelectable = true
         textView.usesFindPanel = true
+        textView.alignment = .justified
         textView.drawsBackground = false
         textView.autoresizesSubviews = true
         textView.displaysLinkToolTips = true
@@ -73,11 +76,12 @@ struct TextView: NSViewRepresentable {
         textView.textContainer?.lineBreakMode = .byCharWrapping
         textView.insertionPointColor = NSColor(Color.accentColor)
         textView.translatesAutoresizingMaskIntoConstraints = true
-        textView.textContainerInset = NSSize(width: 4, height: 8)
-        textView.font = NSFont.monospacedSystemFont(ofSize: 16, weight: .regular)
+        textView.textContainerInset = NSSize(width: 8, height: 8)
+        textView.font = NSFont.systemFont(ofSize: 16)
         textView.writingToolsCoordinator = .none
         textView.writingToolsBehavior = .limited
         textView.allowedWritingToolsResultOptions = [.plainText]
+
         // Create a paragraph style
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineSpacing = 3.8
@@ -122,8 +126,8 @@ struct TextView: NSViewRepresentable {
         }
 
         // Scroll to a point if provided
-        if let scrollPosition = scrollPosition {
-            if isScrolling {
+        if isScrolling {
+            if let scrollPosition = scrollPosition {
                 scrollView.contentView.scroll(scrollPosition)
                 scrollView.reflectScrolledClipView(scrollView.contentView)
                 DispatchQueue.main.async {

@@ -41,9 +41,8 @@ struct MarkdownEditorView: View {
                     }
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-            ScrollView(){
+            ScrollView(.vertical, showsIndicators: true){
                 Markdown(markdownText)
-                    .padding(8)
                     .markdownTheme(.gitMac)
                     .markdownSoftBreakMode(.lineBreak)
                     .markdownBulletedListMarker(.circle)
@@ -53,6 +52,7 @@ struct MarkdownEditorView: View {
                     .markdownMargin(top: .em(0), bottom: .em(0))
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
             }
+            .contentMargins(8, for: .scrollContent)
             .onScrollGeometryChange(for: CGPoint.self) { geometry in
                 geometry.contentOffset
             } action: { _, newValue in
