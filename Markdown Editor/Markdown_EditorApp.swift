@@ -16,13 +16,22 @@ struct Markdown_EditorApp: App {
     @State private var filepath: URL?
 
     var body: some Scene {
-        Window("", id: "") {
-            MarkdownEditorView(markdownText: $markdownText, selection: $selection)
+        WindowGroup("Welcome", id: "Welcome") {
+            WelcomeView()
+                .windowResizeBehavior(.disabled)
+                .windowMinimizeBehavior(.disabled)
+                .windowFullScreenBehavior(.disabled)
+        }
+        .commands {
+            WindowCommands(false)
+        }
+        .windowStyle(.hiddenTitleBar)
+        .windowIdealSize(.fitToContent)
+        .windowResizability(.contentSize)
+
+        DocumentGroup(newDocument: MarkdownFile()) {markdown in
+            MarkdownEditorView(markdownText: .constant(markdown.document.text), selection: $selection)
                 .navigationTitle(filepath?.lastPathComponent ?? "Untitled")
-                .onChange(of: filepath) { _, _ in
-                    updateWindowTitle()
-                }
-                .windowDismissBehavior(.disabled)
                 .windowFullScreenBehavior(.disabled)
         }
         .commands {
@@ -30,8 +39,8 @@ struct Markdown_EditorApp: App {
                 Button("Open...") {
                     openFile()
                 }
-                .keyboardShortcut("o", modifiers: .command)
 
+                .keyboardShortcut("o", modifiers: .command)
                 Button("Save") {
                     saveFile(saveAs: false)
                 }

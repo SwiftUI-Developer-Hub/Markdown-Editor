@@ -12,6 +12,7 @@ import UniformTypeIdentifiers
 struct WelcomeView: View {
     @State private var recentDocuments: [URL] = []
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.newDocument) private var newDocument
     private var color = Color(light: .white, dark: Color(rgba: 0x1819_1dff))
     private var listColor = Color(light: Color(rgba: 0xf7f7_f9ff), dark: Color(rgba: 0x2526_2aff))
 
@@ -38,7 +39,6 @@ struct WelcomeView: View {
                         panel.allowsMultipleSelection = false
                         
                         if panel.runModal() == .OK, let url = panel.url {
-                            // Open the selected document
                             NSDocumentController.shared.openDocument(withContentsOf: url, display: true) { _, _, _ in
                                 dismiss()
                             }
@@ -51,8 +51,8 @@ struct WelcomeView: View {
                         dark: Color(rgba: 0x2526_2aff)
                     ))
                     Button() {
-                        NSDocumentController.shared.newDocument(nil)
                         dismiss()
+                        newDocument(MarkdownFile())
                     } label: {
                         Text("Create New Document")
                     }
@@ -68,7 +68,7 @@ struct WelcomeView: View {
                    Text("No recent files")
                        .italic()
                } else {
-                    List(recentDocuments, id: \.self) { file in
+                    List(NSDocumentController.shared.recentDocumentURLs, id: \.self) { file in
                         Label(file.lastPathComponent, systemImage: "richtext.page.fill")
                             .onTapGesture {
                                 NSDocumentController.shared.openDocument(withContentsOf: file, display: true) { _, _, _ in }

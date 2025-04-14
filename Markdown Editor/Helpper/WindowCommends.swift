@@ -8,8 +8,13 @@
 import SwiftUI
 
 struct WindowCommands: Commands {
+    var isWelcome: Bool = false
+
+    init(_ isWelcome: Bool) {
+        self.isWelcome = isWelcome
+    }
+
     var body: some Commands {
-        CommandGroup(replacing: .newItem) { }
         CommandGroup(replacing: .sidebar) { }
         CommandGroup(replacing: .toolbar) { }
         CommandGroup(replacing: .printItem) { }
@@ -17,5 +22,12 @@ struct WindowCommands: Commands {
         CommandGroup(replacing: .systemServices) { }
         CommandGroup(replacing: .singleWindowList) { }
         CommandGroup(replacing: .windowArrangement) { }
+        if isWelcome {
+            CommandGroup(replacing: .newItem) { }
+            CommandGroup(replacing: .saveItem) { }
+            CommandGroup(replacing: .textEditing) { }
+        } else {
+            TextEditingCommands()
+        }
     }
 }
