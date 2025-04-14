@@ -7,7 +7,6 @@
 
 import AppKit
 import SwiftUI
-import Combine
 import Foundation
 
 struct CursorPosition {
@@ -21,13 +20,20 @@ class Global {
 
 struct TextView: NSViewRepresentable {
     @Binding var text: String
+    @Binding var isScrolling: Bool
+    @Binding var scrollPosition: CGPoint?
     @Binding var selection: TextSelection?
-    var contexts: Context?
-    var onDone: (() -> Void)?
-    init(text: Binding<String>, selection: Binding<TextSelection?>) {
+    var currentScrollPosition: ((_ position: CGPoint) -> Void)?
+    private var onDone: (() -> Void)?
+
+    init(text: Binding<String>, isScrolling: Binding<Bool>, selection: Binding<TextSelection?>, scrollPosition: Binding<CGPoint?>, currentScrollPosition: ((_ position: CGPoint) -> Void)?) {
         _text = text
         _selection = selection
+        _isScrolling = isScrolling
+        _scrollPosition = scrollPosition
+        self.currentScrollPosition = currentScrollPosition
     }
+
     func makeNSView(context: Context) -> NSScrollView {
         let scrollView = PlainTextView.scrollableTextView()
 
@@ -40,7 +46,9 @@ struct TextView: NSViewRepresentable {
         scrollView.horizontalScrollElasticity = .automatic
         scrollView.automaticallyAdjustsContentInsets = true
         scrollView.translatesAutoresizingMaskIntoConstraints = true
-        scrollView.contentInsets = .init(top: 16, left: 8, bottom: 16, right: 8)
+        scrollView.contentView.postsBoundsChangedNotifications = true
+        scrollView.contentInsets = .init(top: 8, left: 8, bottom: 8, right: 8)
+
         
         // MARK: - NStextView Settings
         guard let textView = scrollView.documentView as? NSTextView else {
@@ -62,7 +70,7 @@ struct TextView: NSViewRepresentable {
         textView.textContainer?.lineFragmentPadding = 4
         textView.isContinuousSpellCheckingEnabled = true
         textView.isAutomaticSpellingCorrectionEnabled = true
-        textView.textContainer?.lineBreakMode = .byWordWrapping
+        textView.textContainer?.lineBreakMode = .byCharWrapping
         textView.insertionPointColor = NSColor(Color.accentColor)
         textView.translatesAutoresizingMaskIntoConstraints = true
         textView.textContainerInset = NSSize(width: 4, height: 8)
@@ -82,39 +90,66 @@ struct TextView: NSViewRepresentable {
             textView.string = text
         }
 
-//         = context.coordinator
+        NotificationCenter.default.addObserver(
+            context.coordinator,
+            selector: #selector(Coordinator.contentViewDidChangeBounds(_:)),
+            name: NSScrollView.didLiveScrollNotification,
+            object: scrollView
+        )
+
+        NotificationCenter.default.addObserver(
+            context.coordinator,
+            selector: #selector(Coordinator.contentViewDidEndBounds(_:)),
+            name: NSScrollView.didEndLiveScrollNotification,
+            object: scrollView
+        )
 
         // Return the scroll view
         return scrollView
     }
 
-    func updateNSView(_ nsView: NSScrollView, context: Context) {
-        let textView = nsView.documentView as! NSTextView
+    func updateNSView(_ scrollView: NSScrollView, context: Context) {
+        let textView = scrollView.documentView as! NSTextView
         // Sync the text value if it has changed
         if textView.string != text {
             textView.string = text
         }
-
+        
         DispatchQueue.main.async {
             if textView.window?.firstResponder !== textView {
                 textView.window?.makeFirstResponder(textView)
             }
         }
+
+        // Scroll to a point if provided
+        if let scrollPosition = scrollPosition {
+            if isScrolling {
+                scrollView.contentView.scroll(scrollPosition)
+                scrollView.reflectScrolledClipView(scrollView.contentView)
+                DispatchQueue.main.async {
+                    self.scrollPosition = nil
+                }
+            }
+        }
     }
 
     func makeCoordinator() -> Coordinator {
-        Coordinator(text: $text, selection: $selection, onDone: onDone)
+        Coordinator(text: $text, selection: $selection, isScrolling: .constant(isScrolling), currentScrollPosition: currentScrollPosition, onDone: onDone)
     }
 
     final class Coordinator: NSObject, NSTextViewDelegate {
         var text: Binding<String>
+        var isScrolling: Binding<Bool>
         var selection: Binding<TextSelection?>
+        var currentScrollPosition: ((_ position: CGPoint) -> Void)?
         var onDone: (() -> Void)?
 
-        init(text: Binding<String>, selection: Binding<TextSelection?>, onDone: (() -> Void)? = nil) {
+        init(text: Binding<String>, selection: Binding<TextSelection?>, isScrolling: Binding<Bool>, currentScrollPosition: ((_ position: CGPoint) -> Void)?, onDone: (() -> Void)? = nil) {
             self.text = text
-            self.selection = selection
             self.onDone = onDone
+            self.selection = selection
+            self.isScrolling = isScrolling
+            self.currentScrollPosition = currentScrollPosition
         }
 
         func textDidChange(_ notification: Notification) {
@@ -151,6 +186,26 @@ struct TextView: NSViewRepresentable {
 
             // Create the Range<String.Index> and update the selection
             selection.wrappedValue = TextSelection(range: lowerBoundIndex..<upperBoundIndex)
+        }
+
+        @objc func contentViewDidChangeBounds(_ notification: Notification) {
+            guard let scrollView = notification.object as? NSScrollView else { return }
+            // TODO: Synced scroll mostly works, but there's a minor mismatch in bottom offset when scrolling NSScrollView -> SwiftUI.
+            // Probably due to layout/coordinate differences. Leaving this for future cleanup (or a brave soul).
+            DispatchQueue.main.async {
+                self.isScrolling.wrappedValue = false
+                self.currentScrollPosition?(scrollView.documentVisibleRect.origin)
+            }
+        }
+
+        @objc func contentViewDidEndBounds(_ notification: Notification) {
+            DispatchQueue.main.async {
+                self.isScrolling.wrappedValue = true
+            }
+        }
+
+        deinit {
+            NotificationCenter.default.removeObserver(self)
         }
     }
 }
