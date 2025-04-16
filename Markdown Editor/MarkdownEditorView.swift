@@ -15,32 +15,34 @@ struct MarkdownEditorView: View {
     @State private var scrollTo: CGPoint = CGPoint()
     @State private var scrollPosition: ScrollPosition
     private var color = Color(light: .white, dark: Color(rgba: 0x1819_1dff))
-
+    
     init(markdownText: Binding<String>, selection: Binding<TextSelection?>) {
         _selection = selection
         _markdownText = markdownText
         self.scrollPosition = ScrollPosition.init()
     }
-
+    
     var body: some View {
         HSplitView {
             TextView(text: $markdownText, isScrolling: $isScrolling , selection: $selection, scrollPosition: .constant(scrollTo)) { position in
                 self.scrollPosition.scrollTo(point: position)
             }
-                .onChange(of: selection) {_, newSelection in
-                    guard let newSelection = newSelection else { return }
-                    switch newSelection.indices {
-                    case .selection(let range):
+            .onChange(of: selection) {_, newSelection in
+                guard let newSelection = newSelection else { return }
+                switch newSelection.indices {
+                case .selection(let range):
+                    selectedRange = range
+                case .multiSelection(let rangeSet):
+                    rangeSet.ranges.forEach { range in
                         selectedRange = range
-                    case .multiSelection(let rangeSet):
-                        rangeSet.ranges.forEach { range in
-                            selectedRange = range
-                        }
-                    @unknown default:
-                        break
                     }
+                @unknown default:
+                    break
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+            .basicEditMenu()
+            
             ScrollView(.vertical, showsIndicators: true){
                 Markdown(markdownText)
                     .markdownTheme(.gitMac)

@@ -30,18 +30,22 @@ struct Markdown_EditorApp: App {
                 Button("Open...") {
                     openFile()
                 }
+                .help("Open a file from your computer")
                 .keyboardShortcut("o", modifiers: .command)
-
+                
                 Button("Save") {
                     saveFile(saveAs: false)
                 }
+                .help("Save the current file")
                 .keyboardShortcut("s", modifiers: .command)
-
+                
                 Button("Save As...") {
                     saveFile(saveAs: true)
                 }
+                .help("Save the current file with a new name or in a new location")
                 .keyboardShortcut("S", modifiers: [.command, .shift])
             }
+            
             WindowCommands()
         }
         .windowLevel(.normal)

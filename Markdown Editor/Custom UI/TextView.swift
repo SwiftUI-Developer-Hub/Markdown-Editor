@@ -57,38 +57,6 @@ struct TextView: NSViewRepresentable {
         }
 
         textView.delegate = context.coordinator
-        textView.isEditable = true
-        textView.allowsUndo = true
-        textView.usesFindBar = true
-        textView.isSelectable = true
-        textView.usesFindPanel = true
-        textView.alignment = .justified
-        textView.drawsBackground = false
-        textView.autoresizesSubviews = true
-        textView.displaysLinkToolTips = true
-        textView.isGrammarCheckingEnabled = true
-        textView.baseWritingDirection = .natural
-        textView.setSelectedRange(NSMakeRange(0, 0))
-        textView.autoresizingMask = [.width, .height]
-        textView.textContainer?.lineFragmentPadding = 4
-        textView.isContinuousSpellCheckingEnabled = true
-        textView.isAutomaticSpellingCorrectionEnabled = true
-        textView.textContainer?.lineBreakMode = .byCharWrapping
-        textView.insertionPointColor = NSColor(Color.accentColor)
-        textView.translatesAutoresizingMaskIntoConstraints = true
-        textView.textContainerInset = NSSize(width: 8, height: 8)
-        textView.font = NSFont.systemFont(ofSize: 16)
-        textView.writingToolsCoordinator = .none
-        textView.writingToolsBehavior = .limited
-        textView.allowedWritingToolsResultOptions = [.plainText]
-
-        // Create a paragraph style
-        let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.lineSpacing = 3.8
-
-        // Apply to the text view's typing attributes
-        textView.defaultParagraphStyle = paragraphStyle
-        textView.typingAttributes[.paragraphStyle] = paragraphStyle
 
         if textView.string != text {
             textView.string = text
@@ -218,5 +186,42 @@ class PlainTextView: NSTextView {
     // You can override the menu method to disable the context menu if you still need it
     override func menu(for event: NSEvent) -> NSMenu? {
         return nil
+    }
+
+    override func `self`() -> Self {
+        self.isEditable = true
+        self.allowsUndo = true
+        self.usesFindBar = true
+        self.isSelectable = true
+        self.usesFindPanel = true
+        self.alignment = .justified
+        self.drawsBackground = false
+        self.autoresizesSubviews = true
+        self.displaysLinkToolTips = true
+        self.isGrammarCheckingEnabled = true
+        self.baseWritingDirection = .natural
+        self.setSelectedRange(NSMakeRange(0, 0))
+        self.autoresizingMask = [.width, .height]
+        self.textContainer?.lineFragmentPadding = 4
+        self.isContinuousSpellCheckingEnabled = true
+        self.textContainer?.widthTracksTextView = true
+        self.isAutomaticSpellingCorrectionEnabled = true
+        self.textContainer?.lineBreakMode = .byCharWrapping
+        self.insertionPointColor = NSColor(Color.accentColor)
+        self.translatesAutoresizingMaskIntoConstraints = true
+        self.textContainerInset = NSSize(width: 8, height: 8)
+        self.font = NSFont.systemFont(ofSize: 16)
+        self.writingToolsCoordinator = .none
+        self.writingToolsBehavior = .limited
+        self.allowedWritingToolsResultOptions = [.plainText]
+
+        // Create a paragraph style
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineSpacing = 3.8
+
+        // Apply to the text view's typing attributes
+        self.defaultParagraphStyle = paragraphStyle
+        self.typingAttributes[.paragraphStyle] = paragraphStyle
+        return self
     }
 }
