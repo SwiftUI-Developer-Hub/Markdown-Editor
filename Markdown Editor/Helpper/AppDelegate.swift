@@ -15,18 +15,30 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             .submenu {
             editMenu.delegate = self
         }
+        NSWindow.allowsAutomaticWindowTabbing = false
     }
 
     // This is called every time right before the menu opens
     func menuNeedsUpdate(_ menu: NSMenu) {
-        // Only prune the Edit menu
+
         guard menu.title == "Edit" else { return }
 
-        let unwanted = ["AutoFill", "Substitutions"]
-        unwanted.forEach { title in
-            if let item = menu.item(withTitle: title) {
+        let unwantedTitles = ["Substitutions", "Transformations", "AutoFill"]
+
+        for item in menu.items {
+            if unwantedTitles.contains(item.title) {
                 menu.removeItem(item)
+            }
+
+            // Also check submenu titles (e.g., Substitutions, Transformations)
+            if let submenu = item.submenu {
+                submenu.items.forEach { subItem in
+                    if unwantedTitles.contains(subItem.title) {
+                        submenu.removeItem(subItem)
+                    }
+                }
             }
         }
     }
+
 }
