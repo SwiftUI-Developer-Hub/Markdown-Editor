@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UniformTypeIdentifiers
 
 extension View {
     func basicEditMenu() -> some View {
@@ -33,5 +34,15 @@ extension View {
             }
             .help("Select all the text")
         }
+    }
+}
+
+extension UTType {
+    static var md: UTType {
+        UTType(filenameExtension: "md")!
+    }
+
+    static var mkdn: UTType {
+        UTType(filenameExtension: "mkdn")!
     }
 }

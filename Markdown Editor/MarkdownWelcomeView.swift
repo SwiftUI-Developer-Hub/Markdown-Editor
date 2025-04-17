@@ -12,13 +12,10 @@ import UniformTypeIdentifiers
 struct MarkdownWelcomeView: View {
     @State private var recentDocuments: [URL] = []
     @Environment(\.dismiss) private var dismiss
-    @State private var markdownTypes: [UTType] =  [
-        UTType(filenameExtension: "md")!,
-        UTType(filenameExtension: "mkdn")!
-    ]
     @State private var showFileImporter: Bool = true
     @Environment(\.newDocument) private var newDocument
     @Environment(\.openDocument) private var openDocument
+    private var markdownTypes: [UTType] =  [.md, .mkdn]
     private var color = Color(light: .white, dark: Color(rgba: 0x1819_1dff))
     private var listColor = Color(light: Color(rgba: 0xf7f7_f9ff), dark: Color(rgba: 0x2526_2aff))
     private var buttonColor = Color(light: Color(rgba: 0xf7f7_f9ff), dark: Color(rgba: 0x2526_2aff))
