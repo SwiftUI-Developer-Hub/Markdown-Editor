@@ -17,11 +17,20 @@ struct mdEditorButtonStyle: ButtonStyle {
     }
 }
 
+struct mdEditorListButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .padding()
+            .frame(maxWidth: .infinity, alignment:.leading)
+            .background(configuration.isPressed ? AnyShapeStyle(.tint) : AnyShapeStyle(.clear), in: .rect(cornerRadius: 5))
+    }
+}
+
 struct mdEditorTextFieldStyle: TextFieldStyle {
     func _body(configuration: TextField<Self._Label>) -> some View {
         configuration
-            .textFieldStyle(.plain)
             .padding()
+            .textFieldStyle(.plain)
             .background(Color(light: Color(rgba: 0xd0d0_d3ff), dark: Color(rgba: 0x3334_38ff)), in: .rect(cornerRadius: 5))
     }
 }
