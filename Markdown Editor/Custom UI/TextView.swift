@@ -183,17 +183,15 @@ struct TextView: NSViewRepresentable {
 }
 
 class PlainTextView: NSTextView {
-    // You can override the menu method to disable the context menu if you still need it
     override func menu(for event: NSEvent) -> NSMenu? {
         return nil
     }
-
+    
     override func `self`() -> Self {
         self.isEditable = true
         self.allowsUndo = true
         self.usesFindBar = true
         self.isSelectable = true
-        self.usesFindPanel = true
         self.alignment = .justified
         self.drawsBackground = false
         self.autoresizesSubviews = true
@@ -203,10 +201,19 @@ class PlainTextView: NSTextView {
         self.setSelectedRange(NSMakeRange(0, 0))
         self.autoresizingMask = [.width, .height]
         self.textContainer?.lineFragmentPadding = 4
+        self.smartInsertDeleteEnabled = false
         self.isContinuousSpellCheckingEnabled = true
-        self.textContainer?.widthTracksTextView = true
+        self.isAutomaticDataDetectionEnabled = false
+        self.isAutomaticLinkDetectionEnabled = false
+        self.isAutomaticTextCompletionEnabled = true
+        self.isAutomaticTextReplacementEnabled = true
+        self.isAutomaticDashSubstitutionEnabled = false
+        self.isAutomaticQuoteSubstitutionEnabled = false
         self.isAutomaticSpellingCorrectionEnabled = true
-        self.textContainer?.lineBreakMode = .byCharWrapping
+        self.textContainer?.lineFragmentPadding = 10
+        self.textContainer?.widthTracksTextView = true
+        self.textContainer?.heightTracksTextView = true
+        self.textContainer?.lineBreakMode = .byWordWrapping
         self.insertionPointColor = NSColor(Color.accentColor)
         self.translatesAutoresizingMaskIntoConstraints = true
         self.textContainerInset = NSSize(width: 8, height: 8)
@@ -214,6 +221,9 @@ class PlainTextView: NSTextView {
         self.writingToolsCoordinator = .none
         self.writingToolsBehavior = .limited
         self.allowedWritingToolsResultOptions = [.plainText]
+        self.textLayoutManager?.usesFontLeading = true
+        self.textLayoutManager?.usesHyphenation = true
+        self.textLayoutManager?.limitsLayoutForSuspiciousContents = true
 
         // Create a paragraph style
         let paragraphStyle = NSMutableParagraphStyle()
