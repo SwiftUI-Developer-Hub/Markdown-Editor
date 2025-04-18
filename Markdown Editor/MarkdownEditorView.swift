@@ -130,7 +130,7 @@ struct MarkdownEditorView: View {
             Button {
                 processor?.applyMarkdownToSelection(selectedRange, type: .checklist)
             } label: {
-                IconView("Check Box", icon: "checklist.checked", isAtive: false)
+                IconView("Check Box", icon: "checklist", isAtive: false)
             }
             Button {
                 processor?.applyMarkdownToSelection(selectedRange, type: .blockquote)
