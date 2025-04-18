@@ -145,7 +145,7 @@ struct MarkdownEditorView: View {
             Button {
                 processor?.applyMarkdownToSelection(selectedRange, type: .table(top: "|   |   |", middle: "|---|---|", bottom: "|   |   |"))
             } label: {
-                IconView("Table", icon: "table", isAtive: false)
+                IconView("Table", icon: "tablecells", isAtive: false)
             }
             Button {
                 let range = selectedRange ?? markdownText.startIndex..<markdownText.startIndex
@@ -167,13 +167,13 @@ struct MarkdownEditorView: View {
                     processor?.applyMarkdownToSelection(selectedRange, type: .image(imageName: selectedText, url: selectedText))
                 }
             } label: {
-                IconView("Photo", icon: "photo", isAtive: false)
+                IconView("Photo", icon: "photo.fill", isAtive: false)
             }
 
             Button {
-                processor?.clearAllMarkdown(selectedRange)
+                processor?.clearAllMarkdownForSelection(selectedRange)
             } label: {
-                IconView("Clear All Markdown", icon: "xmark", isAtive: false)
+                IconView("Clear Selected Markdown", icon: "eraser.fill", isAtive: false)
             }
         }
         .sheet(isPresented: $showingInsertLink){

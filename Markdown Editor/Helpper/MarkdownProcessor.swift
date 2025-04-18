@@ -90,7 +90,7 @@ class MarkdownProcessor {
         }
     }
 
-    func clearAllMarkdown(_ range: Range<String.Index>?) {
+    func clearAllMarkdownForSelection(_ range: Range<String.Index>?) {
         let selectedRange = range ?? markdownText.startIndex..<markdownText.startIndex
         var selectedText = String(markdownText[selectedRange])
         selectedText = selectedRange.isEmpty && selectedText.isEmpty ? markdownText : selectedText
