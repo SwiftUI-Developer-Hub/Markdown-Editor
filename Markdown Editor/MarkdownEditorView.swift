@@ -9,19 +9,21 @@ struct MarkdownEditorView: View {
     @State private var showingInsertLink = false
     @State private var showingInsertImage = false
     @State private var processor: MarkdownProcessor?
+    @State private var scrollTo: CGPoint = CGPoint()
     @State private var selectedHeaderLevel: Int = 0
+    @State private var scrollPosition: ScrollPosition
+    @Environment(\.openWindow) private var openWindow
     @Environment(\.undoManager) private var undoManager
     @State private var selectedRange: Range<String.Index>?
-    @State private var scrollTo: CGPoint = CGPoint()
-    @State private var scrollPosition: ScrollPosition
+    @Environment(\.dismissWindow) private var dismissWindow
     private var color = Color(light: .white, dark: Color(rgba: 0x1819_1dff))
-    
-    init(markdownText: Binding<String>, selection: Binding<TextSelection?>) {
+
+    init(markdownFile: FileDocumentConfiguration<MarkdownFile>, selection: Binding<TextSelection?>) {
         _selection = selection
-        _markdownText = markdownText
-        self.scrollPosition = ScrollPosition.init()
+        _markdownText = markdownFile.$document.text
+        self.scrollPosition = ScrollPosition()
     }
-    
+
     var body: some View {
         HSplitView {
             TextView(text: $markdownText, isScrolling: $isScrolling , selection: $selection, scrollPosition: .constant(scrollTo)) { position in
@@ -42,7 +44,7 @@ struct MarkdownEditorView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
             .basicEditMenu()
-            
+
             ScrollView(.vertical, showsIndicators: true){
                 Markdown(markdownText)
                     .markdownTheme(.gitMac)
@@ -179,13 +181,17 @@ struct MarkdownEditorView: View {
             .presentationCornerRadius(20)
         }
         .onAppear {
+            dismissWindow(id: "markdownWelcomeWindow")
             self.processor = MarkdownProcessor($markdownText, undoManager: undoManager)
+        }
+        .onDisappear {
+            openWindow(id: "markdownWelcomeWindow")
         }
     }
 }
 
-struct MarkdownEditorView_Previews: PreviewProvider {
-    static var previews: some View {
-        MarkdownEditorView(markdownText: .constant("![aaa](http://192.168.1.86:84/wp-content/uploads/2025/02/r7gqr1jdqwxa1.jpg)"), selection: .constant(nil))
-    }
-}
+//struct MarkdownEditorView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        MarkdownEditorView(markdownFile: null, selection: .constant(nil))
+//    }
+//}

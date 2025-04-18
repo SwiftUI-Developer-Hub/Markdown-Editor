@@ -10,96 +10,54 @@ import UniformTypeIdentifiers
 
 @main
 struct Markdown_EditorApp: App {
-    @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
-    @State private var markdownText = ""
-    @State private var selection: TextSelection? = nil
     @State private var filepath: URL?
+    @State private var selection: TextSelection? = nil
+    @AppStorage("isWelcome") private var isWelcome: Bool = true
+    @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    @FocusedValue(\.welecomWindowState) private var currentWindowFocusedValue: WelecomWindowState?
 
     var body: some Scene {
-        Window("", id: "") {
-            MarkdownEditorView(markdownText: $markdownText, selection: $selection)
-                .navigationTitle(filepath?.lastPathComponent ?? "Untitled")
-                .onChange(of: filepath) { _, _ in
-                    updateWindowTitle()
-                }
-                .windowDismissBehavior(.disabled)
+        WindowGroup("Wellcome", id: "markdownWelcomeWindow") {
+            MarkdownWelcomeView()
+                .windowResizeBehavior(.disabled)
+                .windowMinimizeBehavior(.disabled)
+                .windowMinimizeBehavior(.disabled)
                 .windowFullScreenBehavior(.disabled)
+                .focusedSceneValue(\.welecomWindowState, .active)
+                .onAppear {
+                    isWelcome = true
+                }
+        }
+        .commandsRemoved()
+        .windowLevel(.normal)
+        .windowStyle(.hiddenTitleBar)
+        .windowIdealSize(.fitToContent)
+        .windowManagerRole(.automatic)
+        .windowResizability(.contentSize)
+        .windowToolbarLabelStyle(fixed: .titleOnly)
+        .windowToolbarStyle(.unifiedCompact(showsTitle: false))
+
+        DocumentGroup(newDocument: MarkdownFile()) { file in
+            MarkdownEditorView(markdownFile: file, selection: $selection)
+                .windowFullScreenBehavior(.disabled)
+                .focusedSceneValue(\.welecomWindowState, .inactive)
+                .onAppear {
+                    isWelcome = false
+                }
         }
         .commands {
-            CommandGroup(after: .saveItem) {
-                Button("Open...") {
-                    openFile()
-                }
-                .help("Open a file from your computer")
-                .keyboardShortcut("o", modifiers: .command)
-                
-                Button("Save") {
-                    saveFile(saveAs: false)
-                }
-                .help("Save the current file")
-                .keyboardShortcut("s", modifiers: .command)
-                
-                Button("Save As...") {
-                    saveFile(saveAs: true)
-                }
-                .help("Save the current file with a new name or in a new location")
-                .keyboardShortcut("S", modifiers: [.command, .shift])
+            if currentWindowFocusedValue == .active {
+                WelcomeCommands()
+            } else {
+                EditorCommands()
             }
-            
-            WindowCommands()
         }
         .windowLevel(.normal)
         .windowStyle(.titleBar)
         .windowToolbarStyle(.expanded)
         .windowIdealSize(.fitToContent)
-        .windowManagerRole(.associated)
+        .windowManagerRole(.automatic)
         .windowResizability(.contentSize)
         .windowToolbarLabelStyle(fixed: .iconOnly)
-    }
-
-    private func openFile() {
-        let panel = NSOpenPanel()
-        panel.allowedContentTypes = [
-            UTType(filenameExtension: "md")!,
-            UTType(filenameExtension: "mkdn")!
-        ]
-        if panel.runModal() == .OK, let url = panel.url {
-            if let content = try? String(contentsOf: url, encoding: .utf8) {
-                markdownText = content
-                filepath = url
-                updateWindowTitle()
-            }
-        }
-    }
-
-    private func saveFile(saveAs: Bool = false) {
-        if saveAs || filepath == nil {
-            let panel = NSSavePanel()
-            panel.allowedContentTypes = [
-                UTType(filenameExtension: "md")!,
-                UTType(filenameExtension: "mkdn")!
-            ]
-            panel.nameFieldStringValue = filepath?.lastPathComponent ?? "Untitled.md"
-
-            if panel.runModal() == .OK, let url = panel.url {
-                do {
-                    try markdownText.write(to: url, atomically: true, encoding: .utf8)
-                    filepath = url
-                    updateWindowTitle()
-                } catch {
-                    print("Error saving file: \(error.localizedDescription)")
-                }
-            }
-        } else {
-            do {
-                try markdownText.write(to: filepath!, atomically: true, encoding: .utf8)
-            } catch {
-                print("Error saving file: \(error.localizedDescription)")
-            }
-        }
-    }
-
-    private func updateWindowTitle() {
-        NSApp.keyWindow?.title = filepath?.lastPathComponent ?? "Untitled"
     }
 }
