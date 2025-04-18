@@ -4,9 +4,8 @@
 //
 //  Created by BAproductions on 4/9/25.
 //
-import Cocoa
+
 import SwiftUI
-import UniformTypeIdentifiers
 
 @main
 struct Markdown_EditorApp: App {

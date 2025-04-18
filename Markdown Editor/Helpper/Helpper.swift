@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-import UniformTypeIdentifiers
+import Foundation
 
 func isDebug() -> Bool {
     #if DEBUG

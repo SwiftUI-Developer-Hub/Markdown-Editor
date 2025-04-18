@@ -34,9 +34,11 @@ struct MarkdownEditorView: View {
                 switch newSelection.indices {
                 case .selection(let range):
                     selectedRange = range
+                    print(range)
                 case .multiSelection(let rangeSet):
                     rangeSet.ranges.forEach { range in
                         selectedRange = range
+                        print(range)
                     }
                 @unknown default:
                     break
@@ -166,6 +168,12 @@ struct MarkdownEditorView: View {
                 }
             } label: {
                 IconView("Photo", icon: "photo", isAtive: false)
+            }
+
+            Button {
+                processor?.clearAllMarkdown()
+            } label: {
+                IconView("Clear All Markdown", icon: "xmark", isAtive: false)
             }
         }
         .sheet(isPresented: $showingInsertLink){

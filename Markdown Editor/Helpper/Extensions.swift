@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Foundation
 import UniformTypeIdentifiers
 
 extension View {
@@ -42,11 +43,13 @@ extension View {
 }
 
 extension UTType {
-    static var md: UTType {
-        UTType(filenameExtension: "md")!
-    }
-
-    static var mkdn: UTType {
-        UTType(filenameExtension: "mkdn")!
-    }
+    static var md: UTType { UTType(filenameExtension: "md")! }
+    static var mkd: UTType { UTType(filenameExtension: "mkd")! }
+    static var mkdn: UTType { UTType(filenameExtension: "mkdn")! }
+    static var mdwn: UTType { UTType(filenameExtension: "mdwn")! }
+    static var mdown: UTType { UTType(filenameExtension: "mdown")! }
+    static var mdtxt: UTType { UTType(filenameExtension: "mdtxt")! }
+    static var mdtext: UTType { UTType(filenameExtension: "mdtext")! }
+    static var markdown: UTType { UTType(filenameExtension: "markdown")! }
 }
+

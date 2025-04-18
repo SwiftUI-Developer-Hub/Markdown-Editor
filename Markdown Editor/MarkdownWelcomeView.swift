@@ -15,7 +15,9 @@ struct MarkdownWelcomeView: View {
     @State private var showFileImporter: Bool = true
     @Environment(\.newDocument) private var newDocument
     @Environment(\.openDocument) private var openDocument
-    private var markdownTypes: [UTType] =  [.md, .mkdn]
+    private var markdownTypes: [UTType] = [
+        .md, .mkd, .mkdn, .mdwn, .mdown, .mdtxt, .mdtext, .markdown, .plainText
+    ]
     private var color = Color(light: .white, dark: Color(rgba: 0x1819_1dff))
     private var listColor = Color(light: Color(rgba: 0xf7f7_f9ff), dark: Color(rgba: 0x2526_2aff))
     private var buttonColor = Color(light: Color(rgba: 0xf7f7_f9ff), dark: Color(rgba: 0x2526_2aff))
@@ -63,34 +65,40 @@ struct MarkdownWelcomeView: View {
                 .frame(maxWidth: 800, maxHeight: .infinity)
                 Divider()
             VStack(alignment: .center) {
-               if recentDocuments.isEmpty {
-                   Text("No recent files")
-                       .italic()
-               } else {
-                   List(
-                    recentDocuments
-                           .filter { FileManager.default.fileExists(atPath: $0.path) },
-                       id: \.self
-                   ) { file in
-                       Button(){
-                           Task {
-                               do {
-                                   _ = try await openDocument(at: file)
-                                   dismiss()
-                               } catch {
-                                   print("Failed to open document:", error.localizedDescription)
-                               }
-                           }
-                       } label: {
-                           Label(file.lastPathComponent, systemImage: "doc.richtext.fill")
-                               .help(file.path)
-                               .labelStyle(.titleAndIcon)
-                       }
-                       .lineSpacing(0)
-                       .buttonStyle(mdEditorListButtonStyle())
-                       .listRowInsets(.init(top: 0, leading: 0, bottom: 0, trailing: 0))
-                   }
-               }
+                if recentDocuments.isEmpty {
+                    ContentUnavailableView(
+                        label: {
+                            Label("No Recent Files", systemImage: "clock.arrow.circlepath")
+                        },
+                        description: {
+                            Text("Your recently opened documents will appear here.")
+                        }
+                    )
+                } else {
+                    List(
+                        recentDocuments.filter { FileManager.default.fileExists(atPath: $0.path) },
+                        id: \.self
+                    ) { file in
+                        Button {
+                            Task {
+                                do {
+                                    _ = try await openDocument(at: file)
+                                    dismiss()
+                                } catch {
+                                    print("Failed to open document:", error.localizedDescription)
+                                }
+                            }
+                        } label: {
+                            Label(file.lastPathComponent, systemImage: "doc.richtext.fill")
+                                .help(file.path)
+                                .labelStyle(.titleAndIcon)
+                        }
+                        .lineSpacing(0)
+                        .buttonStyle(mdEditorListButtonStyle())
+                        .listRowInsets(.init(top: 0, leading: 0, bottom: 0, trailing: 0))
+                    }
+                }
+
             }
             .frame(maxHeight: .infinity)
         }

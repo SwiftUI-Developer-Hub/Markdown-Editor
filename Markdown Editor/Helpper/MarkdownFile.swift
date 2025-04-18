@@ -9,8 +9,13 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 struct MarkdownFile: FileDocument {
-    static var readableContentTypes: [UTType] {[.md, .mkdn]}
-    static var writableContentTypes: [UTType] {[.md, .mkdn]}
+    static var readableContentTypes: [UTType] {[
+        .md, .mkd, .mkdn, .mdwn, .mdown, .mdtxt, .mdtext, .markdown, .plainText
+    ]}
+
+    static var writableContentTypes: [UTType] {[
+        .md, .mkd, .mkdn, .mdwn, .mdown, .mdtxt, .mdtext, .markdown
+    ]}
 
     var text: String
 

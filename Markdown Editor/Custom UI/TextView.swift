@@ -7,14 +7,13 @@
 
 import AppKit
 import SwiftUI
-import Foundation
 
-struct CursorPosition {
+fileprivate struct CursorPosition {
     var start: Int
     var end: Int
 }
 
-class Global {
+fileprivate class Global {
     public static var cursorPosition = CursorPosition(start: 0, end: 0)
 }
 
@@ -182,7 +181,7 @@ struct TextView: NSViewRepresentable {
     }
 }
 
-class PlainTextView: NSTextView {
+fileprivate class PlainTextView: NSTextView {
     override func menu(for event: NSEvent) -> NSMenu? {
         return nil
     }
@@ -201,7 +200,7 @@ class PlainTextView: NSTextView {
         self.setSelectedRange(NSMakeRange(0, 0))
         self.autoresizingMask = [.width, .height]
         self.textContainer?.lineFragmentPadding = 4
-        self.smartInsertDeleteEnabled = false
+        self.smartInsertDeleteEnabled = true
         self.isContinuousSpellCheckingEnabled = true
         self.isAutomaticDataDetectionEnabled = false
         self.isAutomaticLinkDetectionEnabled = false
@@ -212,7 +211,6 @@ class PlainTextView: NSTextView {
         self.isAutomaticSpellingCorrectionEnabled = true
         self.textContainer?.lineFragmentPadding = 10
         self.textContainer?.widthTracksTextView = true
-        self.textContainer?.heightTracksTextView = true
         self.textContainer?.lineBreakMode = .byWordWrapping
         self.insertionPointColor = NSColor(Color.accentColor)
         self.translatesAutoresizingMaskIntoConstraints = true
