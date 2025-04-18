@@ -33,6 +33,10 @@ extension View {
                 NSApp.sendAction(#selector(NSText.selectAll(_:)), to: nil, from: nil)
             }
             .help("Select all the text")
+
+            Divider()
+
+            SpellingAndGrammarMenu()
         }
     }
 }
