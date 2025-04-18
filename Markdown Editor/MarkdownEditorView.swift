@@ -171,7 +171,7 @@ struct MarkdownEditorView: View {
             }
 
             Button {
-                processor?.clearAllMarkdown()
+                processor?.clearAllMarkdown(selectedRange)
             } label: {
                 IconView("Clear All Markdown", icon: "xmark", isAtive: false)
             }
