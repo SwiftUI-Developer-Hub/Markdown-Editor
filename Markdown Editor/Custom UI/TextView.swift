@@ -185,7 +185,7 @@ fileprivate class PlainTextView: NSTextView {
     override func menu(for event: NSEvent) -> NSMenu? {
         return nil
     }
-    
+
     override func `self`() -> Self {
         self.isEditable = true
         self.allowsUndo = true
@@ -193,6 +193,7 @@ fileprivate class PlainTextView: NSTextView {
         self.isSelectable = true
         self.alignment = .justified
         self.drawsBackground = false
+        self.isFieldEditor = false
         self.autoresizesSubviews = true
         self.displaysLinkToolTips = true
         self.isGrammarCheckingEnabled = true
@@ -231,5 +232,23 @@ fileprivate class PlainTextView: NSTextView {
         self.defaultParagraphStyle = paragraphStyle
         self.typingAttributes[.paragraphStyle] = paragraphStyle
         return self
+    }
+}
+
+extension PlainTextView: NSSharingServicePickerDelegate {
+    public func sharingServicePicker(
+        _ sharingServicePicker: NSSharingServicePicker,
+        sharingServicesForItems items: [Any],
+        proposedSharingServices proposedServices: [NSSharingService]
+    ) -> [NSSharingService] {
+        return []
+    }
+
+    public func sharingServicePicker(_ sharingServicePicker: NSSharingServicePicker, delegateFor sharingService: NSSharingService) -> (any NSSharingServiceDelegate)? {
+        return nil
+    }
+
+    public func sharingServicePickerCollaborationModeRestrictions(_ sharingServicePicker: NSSharingServicePicker) -> [NSSharingServicePicker.CollaborationModeRestriction]? {
+        return nil
     }
 }

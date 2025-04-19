@@ -45,7 +45,7 @@ struct MarkdownEditorView: View {
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-            .basicEditMenu()
+            .basicEditMenu($markdownText, selectedRange: selectedRange)
 
             ScrollView(.vertical, showsIndicators: true){
                 Markdown(markdownText)

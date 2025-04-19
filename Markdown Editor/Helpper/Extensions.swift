@@ -10,8 +10,39 @@ import Foundation
 import UniformTypeIdentifiers
 
 extension View {
-    func basicEditMenu() -> some View {
+    func basicEditMenu(_ text: Binding<String>, selectedRange: Range<String.Index>?) -> some View {
         self.contextMenu {
+            if let range = selectedRange {
+                // Convert upperBound to utf16 offset
+                let utf16Offset = range.lowerBound.utf16Offset(in: text.wrappedValue)
+                
+                // Call the misspelledWord function
+                if let misspelled = misspelledWord(at: utf16Offset, in: text.wrappedValue),
+                   let suggestions = suggestions(for: misspelled.word), !suggestions.isEmpty {
+                    
+                    ForEach(suggestions, id: \.self) { guess in
+                        Button(guess) {
+                            let nsText = text.wrappedValue as NSString
+                            let replaced = nsText.replacingCharacters(in: misspelled.range, with: guess)
+                            text.wrappedValue = replaced
+                        }
+                    }
+                    Divider()
+
+                    Button("Ignore Spelling") {
+                        NSSpellChecker.shared.ignoreWord(misspelled.word, inSpellDocumentWithTag: 0)
+                    }
+                    .help("Ignore this word in the current document")
+
+                    Button("Learn Spelling") {
+                        NSSpellChecker.shared.learnWord(misspelled.word)
+                    }
+                    .help("Add this word to your custom dictionary")
+
+                    Divider()
+                }
+            }
+
             // Core editing actions
             Button("Cut") {
                 NSApp.sendAction(#selector(NSText.cut(_:)), to: nil, from: nil)
@@ -53,3 +84,8 @@ extension UTType {
     static var markdown: UTType { UTType(filenameExtension: "markdown")! }
 }
 
+extension String {
+    func nsRange(from range: Range<String.Index>) -> NSRange {
+        return NSRange(range, in: self)
+    }
+}
