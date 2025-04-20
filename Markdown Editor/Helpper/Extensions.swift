@@ -5,21 +5,22 @@
 //  Created by BAproductions on 4/12/25.
 //
 
+import AppKit
 import SwiftUI
 import Foundation
 import UniformTypeIdentifiers
 
 extension View {
     func basicEditMenu(_ text: Binding<String>, selectedRange: Range<String.Index>?) -> some View {
-        self.contextMenu {
+        self.contextMenu{
             if let range = selectedRange {
                 // Convert upperBound to utf16 offset
                 let utf16Offset = range.lowerBound.utf16Offset(in: text.wrappedValue)
-                
+
                 // Call the misspelledWord function
                 if let misspelled = misspelledWord(at: utf16Offset, in: text.wrappedValue),
                    let suggestions = suggestions(for: misspelled.word), !suggestions.isEmpty {
-                    
+
                     ForEach(suggestions, id: \.self) { guess in
                         Button(guess) {
                             let nsText = text.wrappedValue as NSString
@@ -67,6 +68,26 @@ extension View {
             .help("Select all the text")
 
             Divider()
+
+            if let range = selectedRange {
+                let selectedWord = String(text.wrappedValue[range])
+
+                Button("Search “\(selectedWord)” on Google") {
+                    let query = selectedWord.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+                    if let url = URL(string: "https://www.google.com/search?q=\(query)") {
+                        NSWorkspace.shared.open(url)
+                    }
+                }
+
+                Button("Define “\(selectedWord)”") {
+                    let query = selectedWord.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+                    if let url = URL(string: "dict://\(query)") {
+                        NSWorkspace.shared.open(url)
+                    }
+                }
+
+                Divider()
+            }
 
             SpellingAndGrammarMenu()
         }
