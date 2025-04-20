@@ -58,17 +58,19 @@ func misspelledWord(at index: Int, in text: String) -> (word: String, range: NSR
         wordCount: nil
     )
 
+    // Check if the misspelled range matches the word's range
     guard misspelledRange.location != NSNotFound,
           NSEqualRanges(misspelledRange, wordRange) else {
         return nil
     }
-
+    
     return (word, wordRange)
 }
 
-func suggestions(for word: String) -> [String]? {
-    NSSpellChecker.shared.guesses(forWordRange: NSRange(location: 0, length: word.count),
-                                  in: word,
-                                  language: "en_US",
-                                  inSpellDocumentWithTag: 0)
+func suggestions(for word: String) -> [String] {
+    // Return empty array if no suggestions are available
+    return NSSpellChecker.shared.guesses(forWordRange: NSRange(location: 0, length: word.count),
+                                         in: word,
+                                         language: "en_US",
+                                         inSpellDocumentWithTag: 0) ?? []
 }

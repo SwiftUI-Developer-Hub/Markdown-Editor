@@ -18,29 +18,31 @@ extension View {
                 let utf16Offset = range.lowerBound.utf16Offset(in: text.wrappedValue)
 
                 // Call the misspelledWord function
-                if let misspelled = misspelledWord(at: utf16Offset, in: text.wrappedValue),
-                   let suggestions = suggestions(for: misspelled.word), !suggestions.isEmpty {
+                if let misspelled = misspelledWord(at: utf16Offset, in: text.wrappedValue){
+                   let suggestions = suggestions(for: misspelled.word)
 
-                    ForEach(suggestions, id: \.self) { guess in
-                        Button(guess) {
-                            let nsText = text.wrappedValue as NSString
-                            let replaced = nsText.replacingCharacters(in: misspelled.range, with: guess)
-                            text.wrappedValue = replaced
+                    if !suggestions.isEmpty {
+                        ForEach(suggestions, id: \.self) { guess in
+                            Button(guess) {
+                                let nsText = text.wrappedValue as NSString
+                                let replaced = nsText.replacingCharacters(in: misspelled.range, with: guess)
+                                text.wrappedValue = replaced
+                            }
                         }
-                    }
-                    Divider()
+                        Divider()
 
-                    Button("Ignore Spelling") {
-                        NSSpellChecker.shared.ignoreWord(misspelled.word, inSpellDocumentWithTag: 0)
-                    }
-                    .help("Ignore this word in the current document")
+                        Button("Ignore Spelling") {
+                            NSSpellChecker.shared.ignoreWord(misspelled.word, inSpellDocumentWithTag: 0)
+                        }
+                        .help("Ignore this word in the current document")
 
-                    Button("Learn Spelling") {
-                        NSSpellChecker.shared.learnWord(misspelled.word)
-                    }
-                    .help("Add this word to your custom dictionary")
+                        Button("Learn Spelling") {
+                            NSSpellChecker.shared.learnWord(misspelled.word)
+                        }
+                        .help("Add this word to your custom dictionary")
 
-                    Divider()
+                        Divider()
+                    }
                 }
             }
 
@@ -69,18 +71,23 @@ extension View {
 
             Divider()
 
-            if let range = selectedRange {
+            // Check if there is a selected word
+            if let range = selectedRange, !range.isEmpty {
+                // If there is selected text, show the actions for that word
                 let selectedWord = String(text.wrappedValue[range])
 
+                // Ensure the word is percent-encoded for use in URLs
+                let query = selectedWord.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+
+                // Search the selected word on Google
                 Button("Search “\(selectedWord)” on Google") {
-                    let query = selectedWord.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
                     if let url = URL(string: "https://www.google.com/search?q=\(query)") {
                         NSWorkspace.shared.open(url)
                     }
                 }
 
+                // Define the selected word using a dictionary app
                 Button("Define “\(selectedWord)”") {
-                    let query = selectedWord.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
                     if let url = URL(string: "dict://\(query)") {
                         NSWorkspace.shared.open(url)
                     }
