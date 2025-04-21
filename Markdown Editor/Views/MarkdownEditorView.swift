@@ -20,8 +20,8 @@ struct MarkdownEditorView: View {
 
     init(markdownFile: FileDocumentConfiguration<MarkdownFile>, selection: Binding<TextSelection?>) {
         _selection = selection
-        _markdownText = markdownFile.$document.text
         self.scrollPosition = ScrollPosition()
+        _markdownText = markdownFile.$document.text
     }
 
     var body: some View {
@@ -193,11 +193,20 @@ struct MarkdownEditorView: View {
             .presentationCornerRadius(20)
         }
         .onAppear {
-            dismissWindow(id: "markdownWelcomeWindow")
+            withAnimation(.smooth){
+                dismissWindow(id: "markdownWelcomeWindow")
+            }
             self.processor = MarkdownProcessor($markdownText, undoManager: undoManager)
         }
         .onDisappear {
-            openWindow(id: "markdownWelcomeWindow")
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                let visibleWindowCount = NSApp.windows.filter { $0.isVisible && !$0.isKind(of: NSPanel.self) }.count
+                if visibleWindowCount == 0 {
+                    withAnimation(.smooth){
+                        openWindow(id: "markdownWelcomeWindow")
+                    }
+                }
+            }
         }
     }
 }
