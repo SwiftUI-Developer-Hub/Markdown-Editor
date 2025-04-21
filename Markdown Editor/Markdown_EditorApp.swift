@@ -17,7 +17,7 @@ struct Markdown_EditorApp: App {
 
     var body: some Scene {
         // MARK: Welcome Window
-        WindowGroup("Wellcome", id: "markdownWelcomeWindow") {
+        Window("Wellcome", id: "markdownWelcomeWindow") {
             MarkdownWelcomeView()
                 .windowResizeBehavior(.disabled)
                 .windowMinimizeBehavior(.disabled)
