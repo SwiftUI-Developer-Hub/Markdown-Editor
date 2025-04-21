@@ -12,16 +12,18 @@ import UniformTypeIdentifiers
 
 extension View {
     func basicEditMenu(_ text: Binding<String>, selectedRange: Range<String.Index>?) -> some View {
-        self.contextMenu{
-            if let range = selectedRange {
-                // Convert upperBound to utf16 offset
+        self.contextMenu {
+            // Only show spell checking options if there's a selected range
+            if let range = selectedRange, !range.isEmpty {
+                // Convert selected range to UTF16 offset
                 let utf16Offset = range.lowerBound.utf16Offset(in: text.wrappedValue)
 
-                // Call the misspelledWord function
-                if let misspelled = misspelledWord(at: utf16Offset, in: text.wrappedValue){
-                   let suggestions = suggestions(for: misspelled.word)
+                // Check for misspelled word
+                if let misspelled = misspelledWord(at: utf16Offset, in: text.wrappedValue) {
+                    let suggestions = suggestions(for: misspelled.word)
 
-                    if !suggestions.isEmpty {
+                    if suggestions.isEmpty {
+                        // Show suggestions for misspelled word
                         ForEach(suggestions, id: \.self) { guess in
                             Button(guess) {
                                 let nsText = text.wrappedValue as NSString
@@ -31,11 +33,13 @@ extension View {
                         }
                         Divider()
 
+                        // Button to ignore the word
                         Button("Ignore Spelling") {
                             NSSpellChecker.shared.ignoreWord(misspelled.word, inSpellDocumentWithTag: 0)
                         }
                         .help("Ignore this word in the current document")
 
+                        // Button to learn the word
                         Button("Learn Spelling") {
                             NSSpellChecker.shared.learnWord(misspelled.word)
                         }
@@ -46,7 +50,7 @@ extension View {
                 }
             }
 
-            // Core editing actions
+            // Core editing actions (cut, copy, paste)
             Button("Cut") {
                 NSApp.sendAction(#selector(NSText.cut(_:)), to: nil, from: nil)
             }
@@ -64,6 +68,7 @@ extension View {
 
             Divider()
 
+            // Select All action
             Button("Select All") {
                 NSApp.sendAction(#selector(NSText.selectAll(_:)), to: nil, from: nil)
             }
@@ -71,22 +76,18 @@ extension View {
 
             Divider()
 
-            // Check if there is a selected word
             if let range = selectedRange, !range.isEmpty {
-                // If there is selected text, show the actions for that word
-                let selectedWord = String(text.wrappedValue[range])
 
-                // Ensure the word is percent-encoded for use in URLs
+                // Display word search and define actions
+                let selectedWord = String(text.wrappedValue[range])
                 let query = selectedWord.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
 
-                // Search the selected word on Google
                 Button("Search “\(selectedWord)” on Google") {
                     if let url = URL(string: "https://www.google.com/search?q=\(query)") {
                         NSWorkspace.shared.open(url)
                     }
                 }
 
-                // Define the selected word using a dictionary app
                 Button("Define “\(selectedWord)”") {
                     if let url = URL(string: "dict://\(query)") {
                         NSWorkspace.shared.open(url)
@@ -96,6 +97,7 @@ extension View {
                 Divider()
             }
 
+            // Call to the SpellingAndGrammarMenu (if needed)
             SpellingAndGrammarMenu()
         }
     }

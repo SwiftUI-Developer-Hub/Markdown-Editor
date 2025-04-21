@@ -30,8 +30,8 @@ func misspelledWord(at index: Int, in text: String) -> (word: String, range: NSR
     tagger.string = text
 
     // Convert index to String.Index
-    let stringIndex = text.utf16.index(text.utf16.startIndex, offsetBy: index)
-    let utf16Offset = text.utf16.distance(from: text.utf16.startIndex, to: stringIndex)
+    let stringIndex = text.utf8.index(text.utf16.startIndex, offsetBy: index)
+    let utf16Offset = text.utf8.distance(from: text.utf16.startIndex, to: stringIndex)
     var wordRange = NSRange(location: NSNotFound, length: 0)
 
     tagger.enumerateTags(
