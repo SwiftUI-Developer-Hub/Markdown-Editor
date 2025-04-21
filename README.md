@@ -5,15 +5,19 @@
 It helps you write structured content using simple syntax—ideal for documentation, notes, and more.
 
 ## What's Working
-- All toolbar buttons are functional and insert the correct Markdown syntax.
+- Multi-file support.
 - Live preview of the Markdown code works.
 - Basic editing functionality is in place.
-- Undo/Redo behavior
+- Undo/Redo behavior is functioning properly.
+- **Clear formatted for selected text works**, clearing the applied styles.
+- All toolbar buttons are functional and insert the correct Markdown syntax.
 
 ## What's Broken
 - Image size is not supported in the Markdown UI.
+- Spell checking on right-click causes index out of bounds.
 - Synced scrolling between editor and preview does not work properly.
 
 ## What's Missing
-- Multi-file support.
-- Toggle formatting based on text selection does not work.
+- More Developer.
+- Translate select Word.
+- Static String translations.
