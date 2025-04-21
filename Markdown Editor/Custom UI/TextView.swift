@@ -241,21 +241,3 @@ fileprivate class PlainTextView: NSTextView {
         return self
     }
 }
-
-extension PlainTextView: NSSharingServicePickerDelegate {
-    public func sharingServicePicker(
-        _ sharingServicePicker: NSSharingServicePicker,
-        sharingServicesForItems items: [Any],
-        proposedSharingServices proposedServices: [NSSharingService]
-    ) -> [NSSharingService] {
-        return []
-    }
-
-    public func sharingServicePicker(_ sharingServicePicker: NSSharingServicePicker, delegateFor sharingService: NSSharingService) -> (any NSSharingServiceDelegate)? {
-        return nil
-    }
-
-    public func sharingServicePickerCollaborationModeRestrictions(_ sharingServicePicker: NSSharingServicePicker) -> [NSSharingServicePicker.CollaborationModeRestriction]? {
-        return nil
-    }
-}
