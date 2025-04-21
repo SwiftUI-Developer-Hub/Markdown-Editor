@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import Foundation
 
 // Enum to represent different types of markdown
 enum MarkdownType {

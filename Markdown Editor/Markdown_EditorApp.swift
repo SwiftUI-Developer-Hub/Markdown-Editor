@@ -16,6 +16,7 @@ struct Markdown_EditorApp: App {
     @FocusedValue(\.welecomWindowState) private var currentWindowFocusedValue: WelecomWindowState?
 
     var body: some Scene {
+        // MARK: Welcome Window
         WindowGroup("Wellcome", id: "markdownWelcomeWindow") {
             MarkdownWelcomeView()
                 .windowResizeBehavior(.disabled)
@@ -36,6 +37,7 @@ struct Markdown_EditorApp: App {
         .windowToolbarLabelStyle(fixed: .titleOnly)
         .windowToolbarStyle(.unifiedCompact(showsTitle: false))
 
+        // MARK: MarkDown Document Group
         DocumentGroup(newDocument: MarkdownFile()) { file in
             MarkdownEditorView(markdownFile: file, selection: $selection)
                 .windowFullScreenBehavior(.disabled)

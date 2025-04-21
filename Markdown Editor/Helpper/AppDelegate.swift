@@ -10,6 +10,7 @@ import Cocoa
 final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     let unwantedTitles = ["Substitutions", "AutoFill", "Writing Tools"]
 
+    // MARK: Only Works On All Window Types, But Not All Item's
     func applicationDidFinishLaunching(_ notification: Notification) {
         guard let editMenu = NSApp.mainMenu?.item(withTitle: "Edit")?.submenu else {
             print("Menu items not found")
@@ -35,6 +36,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         NSWindow.allowsAutomaticWindowTabbing = false
     }
 
+    // MARK: Only Works On Document Groups
     func applicationWillUpdate(_ notification: Notification) {
         guard let editMenu = NSApp.mainMenu?.item(withTitle: "Edit")?.submenu else {
             print("Menu items not found")
@@ -52,7 +54,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         }
     }
 
-    // This is called every time right before the menu opens
+    // MARK: Only Works On Window & Window Group
     func menuNeedsUpdate(_ menu: NSMenu) {
 
         guard menu.title == "Edit" else {

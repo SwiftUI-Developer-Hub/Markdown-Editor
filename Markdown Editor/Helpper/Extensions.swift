@@ -5,11 +5,10 @@
 //  Created by BAproductions on 4/12/25.
 //
 
-import AppKit
 import SwiftUI
-import Foundation
 import UniformTypeIdentifiers
 
+// MARK: Basic Edit Menu
 extension View {
     func basicEditMenu(_ text: Binding<String>, selectedRange: Range<String.Index>?) -> some View {
         self.contextMenu {
@@ -103,6 +102,7 @@ extension View {
     }
 }
 
+// MARK: Markdown UTType
 extension UTType {
     static var md: UTType { UTType(filenameExtension: "md")! }
     static var mkd: UTType { UTType(filenameExtension: "mkd")! }
@@ -114,6 +114,7 @@ extension UTType {
     static var markdown: UTType { UTType(filenameExtension: "markdown")! }
 }
 
+// MARK: NSRange Form Range
 extension String {
     func nsRange(from range: Range<String.Index>) -> NSRange {
         return NSRange(range, in: self)

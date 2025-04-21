@@ -202,8 +202,3 @@ struct MarkdownEditorView: View {
     }
 }
 
-//struct MarkdownEditorView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        MarkdownEditorView(markdownFile: null, selection: .constant(nil))
-//    }
-//}

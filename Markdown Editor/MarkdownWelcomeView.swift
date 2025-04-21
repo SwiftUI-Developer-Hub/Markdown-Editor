@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import Foundation
 import UniformTypeIdentifiers
 
 struct MarkdownWelcomeView: View {

@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+// MARK: Button Styles
 struct mdEditorButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
@@ -26,6 +27,7 @@ struct mdEditorListButtonStyle: ButtonStyle {
     }
 }
 
+// MARK: Text Field Styles
 struct mdEditorTextFieldStyle: TextFieldStyle {
     func _body(configuration: TextField<Self._Label>) -> some View {
         configuration

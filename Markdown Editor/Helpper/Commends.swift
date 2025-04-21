@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+// MARK: Editor View Menu Commands
 struct EditorCommands: Commands {
     var body: some Commands {
         BaseCommands()
@@ -14,6 +15,7 @@ struct EditorCommands: Commands {
     }
 }
 
+// MARK: Welcome View Menu Commands
 struct WelcomeCommands: Commands {
 
     var body: some Commands {
@@ -29,6 +31,7 @@ struct WelcomeCommands: Commands {
     }
 }
 
+// MARK: Base Menu Commands
 fileprivate struct BaseCommands: Commands {
     var body: some Commands {
         CommandGroup(replacing: .sidebar) {}
