@@ -34,11 +34,15 @@ struct MarkdownEditorView: View {
                 switch newSelection.indices {
                 case .selection(let range):
                     selectedRange = range
-                    print(range)
+                    if isDebug() {
+                        print(range)
+                    }
                 case .multiSelection(let rangeSet):
                     rangeSet.ranges.forEach { range in
                         selectedRange = range
-                        print(range)
+                        if isDebug() {
+                            print(range)
+                        }
                     }
                 @unknown default:
                     break

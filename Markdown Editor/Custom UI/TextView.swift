@@ -223,10 +223,17 @@ fileprivate class PlainTextView: NSTextView {
         self.textLayoutManager?.usesFontLeading = true
         self.textLayoutManager?.usesHyphenation = true
         self.textLayoutManager?.limitsLayoutForSuspiciousContents = true
+        self.textLayoutManager?.textContentManager?.automaticallySynchronizesToBackingStore = true
+        self.textLayoutManager?.textContentManager?.automaticallySynchronizesTextLayoutManagers = true
 
         // Create a paragraph style
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineSpacing = 3.8
+        paragraphStyle.alignment = .justified
+        paragraphStyle.lineBreakStrategy = .pushOut
+        paragraphStyle.usesDefaultHyphenation = true
+        paragraphStyle.lineBreakMode = .byWordWrapping
+        paragraphStyle.allowsDefaultTighteningForTruncation = true
 
         // Apply to the text view's typing attributes
         self.defaultParagraphStyle = paragraphStyle
