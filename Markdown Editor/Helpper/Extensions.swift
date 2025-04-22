@@ -21,7 +21,7 @@ extension View {
                 if let misspelled = misspelledWord(at: utf16Offset, in: text.wrappedValue) {
                     let suggestions = suggestions(for: misspelled.word)
 
-                    if suggestions.isEmpty {
+                    if !suggestions.isEmpty {
                         // Show suggestions for misspelled word
                         ForEach(suggestions, id: \.self) { guess in
                             Button(guess) {
@@ -78,16 +78,16 @@ extension View {
             if let range = selectedRange, !range.isEmpty {
 
                 // Display word search and define actions
-                let selectedWord = String(text.wrappedValue[range])
-                let query = selectedWord.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+                let selectedWord = String(text.wrappedValue[range]).trimmingCharacters(in: .whitespacesAndNewlines)
+                let query = selectedWord.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)?.utf16 ?? "".utf16
 
-                Button("Search “\(selectedWord)” on Google") {
+                Button("Search with Google") {
                     if let url = URL(string: "https://www.google.com/search?q=\(query)") {
                         NSWorkspace.shared.open(url)
                     }
                 }
 
-                Button("Define “\(selectedWord)”") {
+                Button("Look Up “\(selectedWord)”") {
                     if let url = URL(string: "dict://\(query)") {
                         NSWorkspace.shared.open(url)
                     }

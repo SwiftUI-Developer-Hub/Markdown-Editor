@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UniformTypeIdentifiers
 
 // MARK: Editor View Menu Commands
 struct EditorCommands: Commands {
@@ -33,7 +34,13 @@ struct WelcomeCommands: Commands {
 
 // MARK: Base Menu Commands
 fileprivate struct BaseCommands: Commands {
+    @State var showFileImporter: Bool = false
+    private var markdownTypes: [UTType] = [
+        .md, .mkd, .mkdn, .mdwn, .mdown, .mdtxt, .mdtext, .markdown, .plainText
+    ]
     @Environment(\.newDocument) private var newDocument
+    @Environment(\.openDocument) private var openDocument
+    @Environment(\.dismissWindow) private var dismissWindow
 
     var body: some Commands {
         CommandGroup(replacing: .sidebar) {}
@@ -45,6 +52,25 @@ fileprivate struct BaseCommands: Commands {
                 newDocument(MarkdownFile())
             }
             .keyboardShortcut("n", modifiers: [.command])
+            Button("Open") {
+                showFileImporter = true
+                dismissWindow(id: "markdownWelcomeWindow")
+            }
+            .keyboardShortcut("o", modifiers: [.command])
+            .fileImporter(isPresented: $showFileImporter, allowedContentTypes: markdownTypes) { result in
+                Task {
+                    switch result {
+                    case .success(let url):
+                        do {
+                            _ = try await openDocument(at: url)
+                        } catch {
+                            print("Failed to open document:", error.localizedDescription)
+                        }
+                    case .failure(let error):
+                        print("File import failed:", error.localizedDescription)
+                    }
+                }
+            }
         }
         CommandGroup(replacing: .systemServices) {}
         CommandGroup(replacing: .singleWindowList) {}
