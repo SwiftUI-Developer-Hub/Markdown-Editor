@@ -11,7 +11,7 @@ import UniformTypeIdentifiers
 struct MarkdownWelcomeView: View {
     @State private var recentDocuments: [URL] = []
     @Environment(\.dismiss) private var dismiss
-    @State private var showFileImporter: Bool = true
+    @State private var showFileImporter: Bool = false
     @Environment(\.newDocument) private var newDocument
     @Environment(\.openDocument) private var openDocument
     private var markdownTypes: [UTType] = [
@@ -35,24 +35,11 @@ struct MarkdownWelcomeView: View {
                         .font(.title)
                         .foregroundColor(.secondary)
                     Button() {
-                        let panel = NSOpenPanel()
-                        panel.canChooseFiles = true
-                        panel.canChooseDirectories = false
-                        panel.allowsMultipleSelection = false
-                        panel.allowedContentTypes = markdownTypes
-                        if panel.runModal() == .OK, let url = panel.url {
-                            Task {
-                                do {
-                                    try await openDocument(at: url)
-                                    dismiss()
-                                } catch {
-                                    print("Failed to open document: \(error.localizedDescription)")
-                                }
-                            }
-                        }
+                        showFileImporter = true
                     } label: {
                         Text("Open Document")
                     }
+
                     Button() {
                         dismiss()
                         newDocument(MarkdownFile())
@@ -111,6 +98,21 @@ struct MarkdownWelcomeView: View {
         .listStyle(.sidebar)
         .scrollContentBackground(.hidden)
         .buttonStyle(mdEditorButtonStyle())
+        .fileImporter(isPresented: $showFileImporter, allowedContentTypes: markdownTypes) { result in
+            Task {
+                switch result {
+                case .success(let url):
+                    do {
+                        _ = try await openDocument(at: url)
+                        dismiss()
+                    } catch {
+                        print("Failed to open document:", error.localizedDescription)
+                    }
+                case .failure(let error):
+                    print("File import failed:", error.localizedDescription)
+                }
+            }
+        }
     }
 
     // MARK: Load Recent Files

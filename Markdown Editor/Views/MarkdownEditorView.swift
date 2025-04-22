@@ -48,8 +48,8 @@ struct MarkdownEditorView: View {
                     break
                 }
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
             .basicEditMenu($markdownText, selectedRange: selectedRange)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
 
             ScrollView(.vertical, showsIndicators: true){
                 Markdown(markdownText)
@@ -63,11 +63,6 @@ struct MarkdownEditorView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
             }
             .contentMargins(8, for: .scrollContent)
-            .onScrollGeometryChange(for: CGPoint.self) { geometry in
-                geometry.contentOffset
-            } action: { _, newValue in
-                self.scrollTo = newValue
-            }
             .onScrollPhaseChange({ _, phase in
                 switch(phase){
                 case .animating:
@@ -82,6 +77,11 @@ struct MarkdownEditorView: View {
                     isScrolling = false
                 }
             })
+            .onScrollGeometryChange(for: CGPoint.self) { geometry in
+                geometry.contentOffset
+            } action: { _, newValue in
+                self.scrollTo = newValue
+            }
             .scrollPosition($scrollPosition)
         }
         .background(color)

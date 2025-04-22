@@ -33,11 +33,19 @@ struct WelcomeCommands: Commands {
 
 // MARK: Base Menu Commands
 fileprivate struct BaseCommands: Commands {
+    @Environment(\.newDocument) private var newDocument
+
     var body: some Commands {
         CommandGroup(replacing: .sidebar) {}
         CommandGroup(replacing: .toolbar) {}
         CommandGroup(replacing: .printItem) {}
         CommandGroup(replacing: .appSettings) {}
+        CommandGroup(replacing: .newItem) {
+            Button("New") {
+                newDocument(MarkdownFile())
+            }
+            .keyboardShortcut("n", modifiers: [.command])
+        }
         CommandGroup(replacing: .systemServices) {}
         CommandGroup(replacing: .singleWindowList) {}
     }
