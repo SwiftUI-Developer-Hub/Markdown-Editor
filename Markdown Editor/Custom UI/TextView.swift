@@ -83,9 +83,14 @@ struct TextView: NSViewRepresentable {
         let textView = scrollView.documentView as! NSTextView
         // Sync the text value if it has changed
         if textView.string != text {
+            let previousSelectedRange = textView.selectedRange()
             textView.string = text
+
+            let clampedLocation = min(previousSelectedRange.location, text.utf16.count)
+            let clampedLength = min(previousSelectedRange.length, text.utf16.count - clampedLocation)
+            textView.setSelectedRange(NSRange(location: clampedLocation, length: clampedLength))
         }
-        
+
         DispatchQueue.main.async {
             if textView.window?.firstResponder !== textView {
                 textView.window?.makeFirstResponder(textView)
@@ -148,16 +153,26 @@ struct TextView: NSViewRepresentable {
         func textViewDidChangeSelection(_ notification: Notification) {
             guard let textView = notification.object as? NSTextView else { return }
 
-            // Get the selected range as NSRange
-            let selectedRange = textView.selectedRange()
+            let nsRange = textView.selectedRange()
+            let string = textView.string
 
-            // Convert the selected range from NSRange to Range<String.Index>
-            let lowerBoundIndex = textView.string.index(textView.string.startIndex, offsetBy: selectedRange.location)
-            let upperBoundIndex = textView.string.index(lowerBoundIndex, offsetBy: selectedRange.length)
-
-            // Create the Range<String.Index> and update the selection
-                selection.wrappedValue = TextSelection(range: lowerBoundIndex..<upperBoundIndex)
+            guard nsRange.location <= string.utf16.count else {
+                selection.wrappedValue = nil
+                return
             }
+
+            // Convert to Swift String indices safely
+            let utf16 = string.utf16
+            guard let from = utf16.index(utf16.startIndex, offsetBy: nsRange.location, limitedBy: utf16.endIndex),
+                  let to = utf16.index(from, offsetBy: nsRange.length, limitedBy: utf16.endIndex),
+                  let lowerBoundIndex = String.Index(from, within: string),
+                  let upperBoundIndex = String.Index(to, within: string) else {
+                selection.wrappedValue = nil
+                return
+            }
+
+            selection.wrappedValue = .init(range: lowerBoundIndex..<upperBoundIndex)
+        }
 
         @objc func contentViewDidChangeBounds(_ notification: Notification) {
             guard let scrollView = notification.object as? NSScrollView else { return }
