@@ -76,24 +76,26 @@ extension View {
             Divider()
 
             if let range = selectedRange, !range.isEmpty {
+                let stringValue = text.wrappedValue
 
-                // Display word search and define actions
-                let selectedWord = String(text.wrappedValue[range]).trimmingCharacters(in: .whitespacesAndNewlines)
-                let query = selectedWord.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)?.utf16 ?? "".utf16
+                if range.lowerBound < stringValue.endIndex && range.upperBound <= stringValue.endIndex {
+                    let selectedWord = String(stringValue[range]).trimmingCharacters(in: .whitespacesAndNewlines)
+                    let query = selectedWord.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
 
-                Button("Search with Google") {
-                    if let url = URL(string: "https://www.google.com/search?q=\(query)") {
-                        NSWorkspace.shared.open(url)
+                    Button("Search with Google") {
+                        if let url = URL(string: "https://www.google.com/search?q=\(query)") {
+                            NSWorkspace.shared.open(url)
+                        }
                     }
-                }
 
-                Button("Look Up “\(selectedWord)”") {
-                    if let url = URL(string: "dict://\(query)") {
-                        NSWorkspace.shared.open(url)
+                    Button("Look Up “\(selectedWord)”") {
+                        if let url = URL(string: "dict://\(query)") {
+                            NSWorkspace.shared.open(url)
+                        }
                     }
-                }
 
-                Divider()
+                    Divider()
+                }
             }
 
             // Call to the SpellingAndGrammarMenu (if needed)
