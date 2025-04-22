@@ -147,7 +147,7 @@ struct TextView: NSViewRepresentable {
 
         func textViewDidChangeSelection(_ notification: Notification) {
             guard let textView = notification.object as? NSTextView else { return }
-            
+
             // Get the selected range as NSRange
             let selectedRange = textView.selectedRange()
 
@@ -156,8 +156,8 @@ struct TextView: NSViewRepresentable {
             let upperBoundIndex = textView.string.index(lowerBoundIndex, offsetBy: selectedRange.length)
 
             // Create the Range<String.Index> and update the selection
-            selection.wrappedValue = TextSelection(range: lowerBoundIndex..<upperBoundIndex)
-        }
+                selection.wrappedValue = TextSelection(range: lowerBoundIndex..<upperBoundIndex)
+            }
 
         @objc func contentViewDidChangeBounds(_ notification: Notification) {
             guard let scrollView = notification.object as? NSScrollView else { return }
@@ -213,7 +213,12 @@ fileprivate class PlainTextView: NSTextView {
         self.textContainer?.lineFragmentPadding = 10
         self.textContainer?.widthTracksTextView = true
         self.textContainer?.lineBreakMode = .byWordWrapping
-        self.insertionPointColor = NSColor(Color.accentColor)
+        self.insertionPointColor = NSColor(
+            Color(
+                light: Color(rgba: 0x2c65_cfff),
+                dark: Color(rgba: 0x4c8e_f8ff)
+            )
+        )
         self.translatesAutoresizingMaskIntoConstraints = true
         self.textContainerInset = NSSize(width: 8, height: 8)
         self.font = NSFont.systemFont(ofSize: 16)
