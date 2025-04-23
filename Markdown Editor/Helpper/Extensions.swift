@@ -30,6 +30,7 @@ extension View {
                                 text.wrappedValue = replaced
                             }
                         }
+
                         Divider()
 
                         // Button to ignore the word

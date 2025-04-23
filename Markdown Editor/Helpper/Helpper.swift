@@ -25,13 +25,10 @@ func misspelledWord(at index: Int, in text: String) -> (word: String, range: NSR
 
     let nsText = text as NSString
 
-    // Setup LinguisticTagger
+    // Use linguistic tagger to find the word at the given index
     let tagger = NSLinguisticTagger(tagSchemes: [.tokenType], options: 0)
     tagger.string = text
 
-    // Convert index to String.Index
-    let stringIndex = text.utf8.index(text.utf16.startIndex, offsetBy: index)
-    let utf16Offset = text.utf8.distance(from: text.utf16.startIndex, to: stringIndex)
     var wordRange = NSRange(location: NSNotFound, length: 0)
 
     tagger.enumerateTags(
@@ -40,7 +37,7 @@ func misspelledWord(at index: Int, in text: String) -> (word: String, range: NSR
         scheme: .tokenType,
         options: [.omitPunctuation, .omitWhitespace]
     ) { _, tokenRange, _ in
-        if NSLocationInRange(utf16Offset, tokenRange) {
+        if NSLocationInRange(index, tokenRange) {
             wordRange = tokenRange
         }
     }
@@ -49,22 +46,13 @@ func misspelledWord(at index: Int, in text: String) -> (word: String, range: NSR
 
     let word = nsText.substring(with: wordRange)
 
-    let misspelledRange = NSSpellChecker.shared.checkSpelling(
-        of: text,
-        startingAt: wordRange.location,
-        language: "en_US",
-        wrap: false,
-        inSpellDocumentWithTag: 0,
-        wordCount: nil
-    )
+    // Check if just this word is misspelled — don't scan from index
+    let wordIsMisspelled = NSSpellChecker.shared.checkSpelling(
+        of: word,
+        startingAt: 0
+    ).location != NSNotFound
 
-    // Check if the misspelled range matches the word's range
-    guard misspelledRange.location != NSNotFound,
-          NSEqualRanges(misspelledRange, wordRange) else {
-        return nil
-    }
-    
-    return (word, wordRange)
+    return wordIsMisspelled ? (word, wordRange) : nil
 }
 
 func suggestions(for word: String) -> [String] {

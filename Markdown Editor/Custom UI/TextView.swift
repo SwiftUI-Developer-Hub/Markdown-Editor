@@ -119,7 +119,7 @@ struct TextView: NSViewRepresentable {
         var selection: Binding<TextSelection?>
         var currentScrollPosition: ((_ position: CGPoint) -> Void)?
         var onDone: (() -> Void)?
-
+        
         init(text: Binding<String>, selection: Binding<TextSelection?>, isScrolling: Binding<Bool>, currentScrollPosition: ((_ position: CGPoint) -> Void)?, onDone: (() -> Void)? = nil) {
             self.text = text
             self.onDone = onDone
@@ -127,20 +127,20 @@ struct TextView: NSViewRepresentable {
             self.isScrolling = isScrolling
             self.currentScrollPosition = currentScrollPosition
         }
-
+        
         func textDidChange(_ notification: Notification) {
             guard let textView = notification.object as? NSTextView else { return }
-
+            
             let oldText = text.wrappedValue
             let newText = textView.string
-
+            
             text.wrappedValue = newText
-
+            
             textView.undoManager?.registerUndo(withTarget: self) { target in
                 target.text.wrappedValue = oldText
             }
         }
-
+        
         func textView(_ textView: NSTextView, shouldChangeTextIn affectedCharRange: NSRange, replacementString: String?) -> Bool {
             if let onDone = onDone, replacementString == "\n" {
                 textView.resignFirstResponder()
@@ -149,13 +149,13 @@ struct TextView: NSViewRepresentable {
             }
             return true
         }
-
+        
         func textViewDidChangeSelection(_ notification: Notification) {
             guard let textView = notification.object as? NSTextView else { return }
-
+            
             let nsRange = textView.selectedRange()
             let string = textView.string
-
+            
             guard nsRange.location <= string.utf16.count else {
                 selection.wrappedValue = nil
                 return
@@ -234,6 +234,7 @@ fileprivate class PlainTextView: NSTextView {
                 dark: Color(rgba: 0x4c8e_f8ff)
             )
         )
+        self.postsFrameChangedNotifications = true
         self.translatesAutoresizingMaskIntoConstraints = true
         self.textContainerInset = NSSize(width: 8, height: 8)
         self.font = NSFont.systemFont(ofSize: 16)
